@@ -1,0 +1,35 @@
+{
+    "name": "nomic",
+    "version": "0.0.1",
+    "main": "nomic.js",
+    "description": "A lightweight browser aimed as a frontend for legacy Web Applications or to be used as a Kiosk Browser.",
+    "dependencies": [
+        "nomnom",
+        "browser-window",
+        "path"
+    ],
+    "scripts": {
+        "test": "jshint nomic.js",
+        "start": "electron nomic.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hvmonteiro/nomic.git"
+    },
+    "keywords": [
+        "nomic",
+        "browser",
+        "web",
+        "application",
+        "launcher",
+        "kiosk",
+        "lightweight"
+    ],
+    "author": "Hugo V. Monteiro",
+    "license": "GPL-2.0",
+    "bugs": {
+        "url": "https://github.com/hvmonteiro/nomic/issues"
+    },
+    "homepage": "https://github.com/hvmonteiro/nomic#readme",
+    "devDependencies": {}
+}
