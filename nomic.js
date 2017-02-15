@@ -10,12 +10,12 @@
 const electron = require('electron');
 
 // Module to control application life.
-//const app = electron.app;
-const app = require('app');
+const {app, BrowserWindow} = electron
+//const app = require('app');
 
 // Module to create native browser window.
 // const BrowserWindow = electron.BrowserWindow;
-const BrowserWindow = require('browser-window');
+//const BrowserWindow = require('browser-window');
 
 // Module to display a dialog box
 const dialog = require('electron').dialog;
@@ -260,7 +260,7 @@ var appMenu = null;
 
 var menuName = '';
 if (process.platform === 'darwin') {
-  menuName = require('electron').remote.app.getName();
+  menuName = electron.remote.app.getName();
 } else {
   menuName = 'Menu';
 }
