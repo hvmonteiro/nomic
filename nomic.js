@@ -10,7 +10,7 @@
 const electron = require('electron');
 
 // Module to control application life.
-const {app, BrowserWindow} = electron
+const {app, BrowserWindow} = electron;
 //const app = require('app');
 
 // Module to create native browser window.
@@ -342,7 +342,7 @@ function createWindow () {
 
   //
 
-  function onBeforeUnload (e, BrowserWindow) { // Working: but window is still always closed
+    function onBeforeUnload (e, BrowserWindow) { // Working: but window is still always closed
     /*  e.preventDefault();
       e.returnValue = false;
      {

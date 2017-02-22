@@ -1,35 +1,47 @@
 {
-    "name": "nomic",
-    "version": "0.0.1",
-    "main": "nomic.js",
-    "description": "A lightweight browser aimed as a frontend for legacy Web Applications or to be used as a Kiosk Browser.",
-    "dependencies": [
-        "nomnom",
-        "browser-window",
-        "path"
-    ],
-    "scripts": {
-        "test": "jshint nomic.js",
-        "start": "electron nomic.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/hvmonteiro/nomic.git"
-    },
-    "keywords": [
-        "nomic",
-        "browser",
-        "web",
-        "application",
-        "launcher",
-        "kiosk",
-        "lightweight"
-    ],
-    "author": "Hugo V. Monteiro",
-    "license": "GPL-2.0",
-    "bugs": {
-        "url": "https://github.com/hvmonteiro/nomic/issues"
-    },
-    "homepage": "https://github.com/hvmonteiro/nomic#readme",
-    "devDependencies": {}
+  "name": "nomic",
+  "productName": "Nomic",
+  "version": "0.0.1",
+  "main": "nomic.js",
+  "description": "A lightweight browser aimed as a frontend for legacy Web Applications or to be used as a Kiosk Browser.",
+  "scripts": {
+    "start": "electron nomic.js",
+    "clean": "grunt clean --verbose",
+    "test": "jshint nomic.js",
+    "exec-test": "electron src/majin.js --test",
+    "build": "./build.sh all"
+  },
+  "dependencies": {
+    "electron-prebuilt": "1.x.x",
+    "nomnom": "1.x.x",
+    "path": "0.x.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hvmonteiro/nomic.git"
+  },
+  "keywords": [
+    "nomic",
+    "web",
+    "kiosk",
+    "webapp",
+    "browser",
+    "desktop",
+    "launcher",
+    "application",
+    "lightweight"
+  ],
+  "author": "Hugo V. Monteiro",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/hvmonteiro/nomic/issues"
+  },
+  "homepage": "https://github.com/hvmonteiro/nomic#readme",
+  "devDependencies": {
+    "rcedit" : "0.x.x",
+    "electron-packager": "7.x.x",
+    "nomnom": "1.x.x",
+    "browser-window": "0.x.x",
+    "path": "0.x.x"
+  }
 }
