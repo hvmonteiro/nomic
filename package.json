@@ -39,9 +39,6 @@
   "homepage": "https://github.com/hvmonteiro/nomic#readme",
   "devDependencies": {
     "rcedit" : "0.x.x",
-    "electron-packager": "7.x.x",
-    "nomnom": "1.x.x",
-    "browser-window": "0.x.x",
-    "path": "0.x.x"
+    "electron-packager": "7.x.x"
   }
 }

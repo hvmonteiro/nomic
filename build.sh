@@ -48,7 +48,7 @@ _init_build()  {
     done
     echo ""
 
-    cp -f nomic.js package.json LICENSE README.md usage.txt version.json "$SRC_DIR"
+    cp -rf nomic.js package.json LICENSE README.md usage.txt version.json node_modules "$SRC_DIR"
 
     unalias which > /dev/null 2>&1
 
