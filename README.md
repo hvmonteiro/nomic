@@ -15,5 +15,5 @@ Nomic uses [Electron](https://github.com/electron/electron), [Chromium](https://
 # Usage Help
 
 
-![Screenshot of Usage Help](https://raw.githubusercontent.com/hvmonteiro/nomic/master/images/screenshot01.png)
+![Screenshot of Usage Help](https://raw.githubusercontent.com/hvmonteiro/nomic/master/images/screenshot-01.png)
 
