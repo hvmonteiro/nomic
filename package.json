@@ -12,9 +12,8 @@
     "build": "./build.sh all"
   },
   "dependencies": {
-    "electron-prebuilt": "1.x.x",
-    "nomnom": "1.x.x",
-    "path": "0.x.x"
+    "commander": "2.x.x",
+    "valid-url": "^1.0.9"
   },
   "repository": {
     "type": "git",
@@ -38,7 +37,6 @@
   },
   "homepage": "https://github.com/hvmonteiro/nomic#readme",
   "devDependencies": {
-    "rcedit" : "0.x.x",
     "electron-packager": "7.x.x"
   }
 }

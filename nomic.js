@@ -83,7 +83,7 @@ var opts = require("nomnom")
     'icon-file': {
       metavar: 'FILE',
       help: 'Icon file to use as Window icon',
-      callback: function (icon) {
+      callback: function (icon) { // FIXME Check if file exists.
           browserWindowOptions.icon = icon;
       }
     },
