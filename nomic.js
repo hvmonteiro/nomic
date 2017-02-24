@@ -22,6 +22,9 @@ const dialog = require('electron').dialog;
 
 const path = require('path');
 
+// Validate Address URLs
+const validUrl = require('valid-url');
+
 
 // Module to create window main menu
 const Menu = electron.Menu;
@@ -55,205 +58,82 @@ var browserWindowOptions = {
   };
 
 // Module to parse command line arguments
-var opts = require("nomnom")
-  .options({
-    title: {
-      abbr: 't',
-      help: 'Sets window title',
-      callback: function (title) {
-        titleName = title;
-        browserWindowOptions.title = titleName;
-      }
-    },
-    config: {
-      abbr: 'c',
-      metavar: 'FILE',
-      help: 'Configuration file in JSON format with options',
-      callback: function (config) {
-          configFileName = config;
-      }
-    },
-    'custom-menu': {
-      metavar: 'FILE',
-      help: 'Configuration file in JSON format to have customized menus instead of the default.',
-      callback: function (menuConfig) {
-          menuConfigFileName = menuConfig;
-      }
-    },
-    'icon-file': {
-      metavar: 'FILE',
-      help: 'Icon file to use as Window icon',
-      callback: function (icon) { // FIXME Check if file exists.
-          browserWindowOptions.icon = icon;
-      }
-    },
-    kiosk: {
-      flag: true,
-      help: 'Launches in a kiosk mode, that is, turns the main window into a frontend for a legacy Web Application.',
-      callback: function () {
-          browserWindowOptions.kiosk = true;
-      }
-    },
-    fullscreen: {
-      abbr: 'f',
-      flag: true,
-      help: 'Launches in fullscreen mode',
-      callback: function () {
-          browserWindowOptions.fullscreen = true;
-      }
-    },
-    maximized: {
-      flag: true,
-      help: 'Launches in a maximized window',
-      callback: function () {
-          browserWindowOptions.maximized = true;
-      }
-    },
-    width: {
-      help: 'Sets the window Width at launch',
-      callback: function(width) {
-        if (width != parseInt(width)) {
-          return 'Error: Width value must must be an integer number';
-        } else {
-          browserWindowOptions.width = width;
-        }
-      }
-    },
-    height: {
-      help: 'Sets the window Height at launch',
-      callback: function(height) {
-        if (height != parseInt(height)) {
-          return 'Error: Height value must must be an integer number';
-        } else {
-          browserWindowOptions.height = height;
-        }
-      }
-    },
-    minwidth: {
-      help: 'Sets the minimum Width the window is allowed to be resized to',
-      callback: function(minwidth) {
-        if (minwidth != parseInt(minwidth)) {
-          return 'Error: minWidth value must must be an integer number';
-        } else {
-          browserWindowOptions.minwidth = minwidth;
-        }
-      }
-    },
-    minheight: {
-      help: 'Sets the minimum Height the window is allowed to be resized to',
-      callback: function(minheight) {
-        if (minheight != parseInt(minheight)) {
-          return 'Error: minHeight value must must be an integer number';
-        } else {
-          browserWindowOptions.minheight = minheight;
-        }
-      }
-    },
-    maxwidth: {
-      help: 'Sets the maximum Width the window is allowed to be resized to',
-      callback: function(maxwidth) {
-        if (maxwidth != parseInt(maxwidth)) {
-          return 'Error: maxWidth value must must be an integer number';
-        } else {
-          browserWindowOptions.maxwidth = maxwidth;
-        }
-      }
-    },
-    maxheight: {
-      help: 'Sets the maximum Height the window is allowed to be resized to',
-      callback: function(maxheight) {
-        if (maxheight != parseInt(maxheight)) {
-          return 'Error: maxHeight value must must be an integer number';
-        } else {
-          browserWindowOptions.maxheight = maxheight;
-        }
-      }
-    },
-    'center': {
-      flag: true,
-      help: 'Centers the window in the middle of the desktop',
-      callback: function () {
-        browserWindowOptions.center = true;
-      }
-    },
-    'disableMenu': {
-      flag: true,
-      help: 'Disables all Menus. (default: always shown)',
-      callback: function () {
-        browserWindowOptions.autoHideMenuBar = true;
-      }
-    },
-    'autoHideMenu': {
-      flag: true,
-      help: 'Sets the Menu to automatically hide when not in use. (default: always shown)',
-      callback: function () {
-        browserWindowOptions.autoHideMenuBar = true;
-      }
-    },
-    'minimizable': {
-      default: true,
-      help: 'Sets if the window is allowed to be minimized. (default: true)',
-      callback: function (option) {
-        browserWindowOptions.minimizable = option;
-      }
-    },
-    'maximizable': {
-      default: true,
-      help: 'Sets if the window is allowed to be maximized. (default: true)',
-      callback: function (option) {
-        browserWindowOptions.maximizable = option;
-      }
-    },
-    'skipTaskbar': {
-      flag: true,
-      help: 'When specified, the application window will not appear in desktop task bar.',
-      callback: function () {
-        browserWindowOptions.skipTaskBar = true;
-      }
-    },
-    'resizable': {
-      flag: true,
-      default: true,
-      help: 'Doesn\'t allow the window to be resizable',
-      callback: function (option) {
-        browserWindowOptions.resizable = option;
-      }
-    },
-    'no-border': {
-      flag: true,
-      help: 'Makes the window borderless',
-      callback: function () {
-        browserWindowOptions.frame = false;
-      }
-    },
-    'cache': {
-      flag: true,
-      default: true,
-      help: 'Don\'t cache content',
-      callback: function (option) {
-        cacheContent = option;
-      }
-    },
-    debug: {
-      abbr: 'd',
-      flag: true,
-      help: 'Print debugging info',
-      callback: function () {
-          debug = true;
-      }
-    }
-  }).parse();
+var opts = require('commander');
 
-// Set the URL to open
-if (opts[0]) openPageURL = opts[0];
+opts
+    .version('0.0.1')
+    .option('-t, --title <title>', 'Sets window title name', titleName)
+    .option('-c , --config <file>', 'Configuration file in JSON format with options', path.resolve(process.cwd())+'/nomic.json')
+    .option('--custom-menu <file>', 'Configuration file in JSON format to have customized menus instead of the default.', path.resolve(process.cwd())+'/menu.json')
+    .option('--icon-file <file>', 'Icon file to use as Window icon. ICO, PNG and JPEG are supported.', path.resolve(process.cwd())+'/nomic.png')
+    .option('--kiosk', 'Launches in a kiosk mode, that is, turns the main window into a frontend for a legacy Web Application.', false)
+    .option('-f, --fullscreen', 'Launches in fullscreen mode', false)
+    .option('--maximized', 'Launches in a maximized window', false)
+    .option('--width <n>', 'Sets the window Width at launch', parseInt)
+    .option('--height <n>', 'Sets the window Height at launch', parseInt)
+    .option('--minwidth <n>', 'Sets the minimum Width the window is allowed to be resized to', parseInt)
+    .option('--minheight <n>', 'Sets the minimum Height the window is allowed to be resized to', parseInt)
+    .option('--maxwidth <n>', 'Sets the maximum Width the window is allowed to be resized to', parseInt)
+    .option('--maxheight <n>', 'Sets the maximum Height the window is allowed to be resized to', parseInt)
+    .option('--center', 'Centers the window in the middle of the desktop', false)
+    .option('--disable-menu', 'Disables all Menus. (default: always shown)', false)
+    .option('--autohide-menu', 'Sets the Menu to automatically hide when not in use. (default: always shown)', false)
+    .option('--minimizable', 'Sets if the window is allowed to be minimized. (default: true)', true)
+    .option('--maximizable', 'Sets if the window is allowed to be maximized. (default: true)', true)
+    .option('--skip-taskbar', 'When specified, the application window will not appear in desktop task bar.', false)
+    .option('--on-top', 'Sets whether the window should show always on top of other windows.', false)
+    .option('--no-resizable', 'Doesn\'t allow the window to be resizable', false)
+    .option('--no-border', 'Makes the window borderless', false)
+    .option('--no-cache', 'Don\'t cache content', false)
+    .option('--dev', 'Enable development tools')
+    .option('-d, --debug', 'Print debugging info')
+
+    .parse(process.argv);
+
+if (opts.title) browserWindowOptions.title = opts.title;
+if (opts.config) configFileName = opts.config;
+if (opts.customMenu) menuConfigFileName = opts.customMenu;
+if (opts.iconFile) browserWindowOptions.icon = opts.iconFile;
+if (opts.kiosk) browserWindowOptions.kiosk = true;
+if (opts.fullscreen) browserWindowOptions.fullscreen = true;
+if (opts.maximized) browserWindowOptions.maximized = true;
+if (opts.width) browserWindowOptions.width = opts.width;
+if (opts.height) browserWindowOptions.width = opts.height;
+if (opts.minwidth) browserWindowOptions.minwidth = opts.minwidth;
+if (opts.minheight) browserWindowOptions.minwidth = opts.maxheight;
+if (opts.maxwidth) browserWindowOptions.maxwidth = opts.maxwidth;
+if (opts.maxheight) browserWindowOptions.maxwidth = opts.maxheight;
+if (opts.center) browserWindowOptions.center = true;
+if (opts.disableMenu) browserWindowOptions.disableMenuBar = true;
+if (opts.autohideMenu) browserWindowOptions.autoHideMenuBar = true;
+if (opts.minimizable) browserWindowOptions.minimizable = true;
+if (opts.maximizable) browserWindowOptions.maximizable = true;
+if (opts.skipTaskbar) browserWindowOptions.skipTaskBar = true;
+if (opts.onTop) browserWindowOptions.alwaysOnTop = true;
+if (opts.noResizable) browserWindowOptions.resizable = false;
+if (opts.noBorder) browserWindowOptions.frame = false;
+if (opts.noCache) cacheContent = false;
+if (opts.dev) BrowserWindow.devTools = true;
+if (opts.args[0]) openPageURL = opts.args[0]; // Set the URL to open
 
 // Debug Log
-if (debug) {
+if (opts.debug) {
   console.log(opts);
+  console.log('Arguments specified: %j', process.argv);
+  console.log('OpenPageURL: %j', openPageURL);
+  console.log('----------------');
   console.log(require('module').globalPaths);
   console.log(require('electron'));
+  console.log('----------------');
+  console.log('browserWindowOptions: ');
+  console.log(browserWindowOptions);
 }
 
+// Validate URL
+if (!validUrl.isUri(openPageURL)){
+    console.log('Invalid URL: %s', openPageURL);
+    process.exit(1);
+}
 
 var mainWindow = null;
 var appMenu = null;
@@ -264,6 +144,7 @@ if (process.platform === 'darwin') {
 } else {
   menuName = 'Menu';
 }
+process.name = appName;
 
 var mainMenu = [{
   label: menuName,
@@ -318,7 +199,6 @@ var mainMenu = [{
 appMenu = Menu.buildFromTemplate(mainMenu);
 
 app.setName(appName);
-Menu.setApplicationMenu(appMenu);
 
 function createWindow () {
   // debug
@@ -327,8 +207,17 @@ function createWindow () {
     console.log(browserWindowOptions);
     console.log('openPageURL: ' + openPageURL);
   }
-  // Create the browser window.
-  mainWindow = new BrowserWindow(browserWindowOptions);
+// Create the browser window.
+  var  mainWindow = new BrowserWindow(browserWindowOptions);
+
+  if (opts.disableMenu) {
+    Menu.setApplicationMenu(null)
+    mainWindow.setMenu(null);
+  } else {
+    Menu.setApplicationMenu(appMenu);
+    mainWindow.setMenu(appMenu);
+  }
+
 
   // mainWindow.loadURL('about:config', browserOptions);
   mainWindow.loadURL(openPageURL, browserOptions);

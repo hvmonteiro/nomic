@@ -32,16 +32,18 @@ opts
     .option('--resizable', 'Doesn\'t allow the window to be resizable', true)
     .option('--no-border', 'Makes the window borderless', true)
     .option('--cache', 'Don\'t cache content', false)
+    .option('--dev', 'Enable development tools')
     .option('-d, --debug', 'Print debugging info')
 
     .parse(process.argv);
+
 
 if (!process.argv.slice(2).length) {
     opts.outputHelp();
     process.exit(254);
 }
 
-openURI = process.argv[process.argv.length-1];
+openURI = opts.args[0];
 
 if (validUrl.isUri(openURI)){
     console.log('URI to open: %s', openURI);
@@ -50,10 +52,13 @@ if (validUrl.isUri(openURI)){
     process.exit(1);
 }
 
-console.log('Specified arguments: %j', process.argv);
-if (opts.title) console.log('Title: %j', opts.title);
-if (opts.width) console.log('Width: %j', opts.width);
-console.log(openURI);
-// DEBUG 
-// console.log(opts);
-//
+if (opts.debug) {
+    console.log(opts);
+    console.log('Specified arguments: %j', process.argv);
+    if (opts.title) console.log('Title: %j', opts.title);
+    if (opts.width) console.log('Width: %j', opts.width);
+    if (opts.dev) console.log('Devtools: %j', opts.dev); // this.BrowserWindow.toggleDevTools();
+    console.log(openURI);
+}
+process.exit();
+
