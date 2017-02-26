@@ -42,53 +42,53 @@ var openPageURL = homePageURL;
 var configFileName = '';
 
 var browserWindowOptions = {
-    // width: 380,
-    // height: 380,
-    // minWidth: 380,
-    // minHeight: 380,
-    // maxWidth: 380,
-    // maxHeight: 380,
-    title: titleName,
-    // autoHideMenuBar: true,
-    ////  maximizable: false,
-    // skipTaskbar: false,
-    // resizable: true,
-    show: false,
-    // icon: path.join(__dirname, 'images', 'icon@2.png')
-  };
+  // width: 380,
+  // height: 380,
+  // minWidth: 380,
+  // minHeight: 380,
+  // maxWidth: 380,
+  // maxHeight: 380,
+  title: titleName,
+  // autoHideMenuBar: true,
+  ////  maximizable: false,
+  // skipTaskbar: false,
+  // resizable: true,
+  show: false,
+  // icon: path.join(__dirname, 'images', 'icon@2.png')
+};
 
 // Module to parse command line arguments
 var opts = require('commander');
 
 opts
-    .version('0.0.1')
-    .option('-t, --title <title>', 'Sets window title name', titleName)
-    .option('-c , --config <file>', 'Configuration file in JSON format with options', path.resolve(process.cwd())+'/nomic.json')
-    .option('--custom-menu <file>', 'Configuration file in JSON format to have customized menus instead of the default.', path.resolve(process.cwd())+'/menu.json')
-    .option('--icon-file <file>', 'Icon file to use as Window icon. ICO, PNG and JPEG are supported.', path.resolve(process.cwd())+'/nomic.png')
-    .option('--kiosk', 'Launches in a kiosk mode, that is, turns the main window into a frontend for a legacy Web Application.', false)
-    .option('-f, --fullscreen', 'Launches in fullscreen mode', false)
-    .option('--maximized', 'Launches in a maximized window', false)
-    .option('--width <n>', 'Sets the window Width at launch', parseInt)
-    .option('--height <n>', 'Sets the window Height at launch', parseInt)
-    .option('--minwidth <n>', 'Sets the minimum Width the window is allowed to be resized to', parseInt)
-    .option('--minheight <n>', 'Sets the minimum Height the window is allowed to be resized to', parseInt)
-    .option('--maxwidth <n>', 'Sets the maximum Width the window is allowed to be resized to', parseInt)
-    .option('--maxheight <n>', 'Sets the maximum Height the window is allowed to be resized to', parseInt)
-    .option('--center', 'Centers the window in the middle of the desktop', false)
-    .option('--disable-menu', 'Disables all Menus. (default: always shown)', false)
-    .option('--autohide-menu', 'Sets the Menu to automatically hide when not in use. (default: always shown)', false)
-    .option('--minimizable', 'Sets if the window is allowed to be minimized. (default: true)', true)
-    .option('--maximizable', 'Sets if the window is allowed to be maximized. (default: true)', true)
-    .option('--skip-taskbar', 'When specified, the application window will not appear in desktop task bar.', false)
-    .option('--on-top', 'Sets whether the window should show always on top of other windows.', false)
-    .option('--no-resizable', 'Doesn\'t allow the window to be resizable', false)
-    .option('--no-border', 'Makes the window borderless', false)
-    .option('--no-cache', 'Don\'t cache content', false)
-    .option('--dev', 'Enable development tools')
-    .option('-d, --debug', 'Print debugging info')
+  .version('0.0.1')
+  .option('-t, --title <title>', 'Sets window title name', titleName)
+  .option('-c , --config <file>', 'Configuration file in JSON format with options', path.resolve(process.cwd()) + '/nomic.json')
+  .option('--custom-menu <file>', 'Configuration file in JSON format to have customized menus instead of the default.', path.resolve(process.cwd()) + '/menu.json')
+  .option('--icon-file <file>', 'Icon file to use as Window icon. ICO, PNG and JPEG are supported.', path.resolve(process.cwd()) + '/nomic.png')
+  .option('--kiosk', 'Launches in a kiosk mode, that is, turns the main window into a frontend for a legacy Web Application.', false)
+  .option('-f, --fullscreen', 'Launches in fullscreen mode', false)
+  .option('--maximized', 'Launches in a maximized window', false)
+  .option('--width <n>', 'Sets the window Width at launch', parseInt)
+  .option('--height <n>', 'Sets the window Height at launch', parseInt)
+  .option('--minwidth <n>', 'Sets the minimum Width the window is allowed to be resized to', parseInt)
+  .option('--minheight <n>', 'Sets the minimum Height the window is allowed to be resized to', parseInt)
+  .option('--maxwidth <n>', 'Sets the maximum Width the window is allowed to be resized to', parseInt)
+  .option('--maxheight <n>', 'Sets the maximum Height the window is allowed to be resized to', parseInt)
+  .option('--center', 'Centers the window in the middle of the desktop', false)
+  .option('--disable-menu', 'Disables all Menus. (default: always shown)', false)
+  .option('--autohide-menu', 'Sets the Menu to automatically hide when not in use. (default: always shown)', false)
+  .option('--no-minimize', 'Sets if the window is allowed to be minimized. (default: false)', true)
+  .option('--no-maximize', 'Sets if the window is allowed to be maximized. (default: false)', true)
+  .option('--skip-taskbar', 'When specified, the application window will not appear in desktop task bar.', false)
+  .option('--on-top', 'Sets whether the window should show always on top of other windows.', false)
+  .option('--no-resize', 'Doesn\'t allow the window to be resizable', false)
+  .option('--no-border', 'Makes the window borderless', false)
+  .option('--no-cache', 'Don\'t cache content', false)
+  .option('--dev', 'Enable development tools')
+  .option('-d, --debug', 'Print debugging info')
 
-    .parse(process.argv);
+  .parse(process.argv);
 
 if (opts.title) browserWindowOptions.title = opts.title;
 if (opts.config) configFileName = opts.config;
@@ -106,11 +106,11 @@ if (opts.maxheight) browserWindowOptions.maxwidth = opts.maxheight;
 if (opts.center) browserWindowOptions.center = true;
 if (opts.disableMenu) browserWindowOptions.disableMenuBar = true;
 if (opts.autohideMenu) browserWindowOptions.autoHideMenuBar = true;
-if (opts.minimizable) browserWindowOptions.minimizable = true;
-if (opts.maximizable) browserWindowOptions.maximizable = true;
+if (opts.noMinimize) browserWindowOptions.minimizable = false;
+if (opts.noMaximize) browserWindowOptions.maximizable = false;
 if (opts.skipTaskbar) browserWindowOptions.skipTaskBar = true;
 if (opts.onTop) browserWindowOptions.alwaysOnTop = true;
-if (opts.noResizable) browserWindowOptions.resizable = false;
+if (opts.noResize) browserWindowOptions.resizable = false;
 if (opts.noBorder) browserWindowOptions.frame = false;
 if (opts.noCache) cacheContent = false;
 if (opts.dev) BrowserWindow.devTools = true;
@@ -130,9 +130,9 @@ if (opts.debug) {
 }
 
 // Validate URL
-if (!validUrl.isUri(openPageURL)){
-    console.log('Invalid URL: %s', openPageURL);
-    process.exit(1);
+if (!validUrl.isUri(openPageURL)) {
+  console.log('Invalid URL: %s', openPageURL);
+  process.exit(1);
 }
 
 var mainWindow = null;
@@ -200,15 +200,15 @@ appMenu = Menu.buildFromTemplate(mainMenu);
 
 app.setName(appName);
 
-function createWindow () {
+function createWindow() {
   // debug
   if (debug) {
     console.log('browserWindowOptions');
     console.log(browserWindowOptions);
     console.log('openPageURL: ' + openPageURL);
   }
-// Create the browser window.
-  var  mainWindow = new BrowserWindow(browserWindowOptions);
+  // Create the browser window.
+  var mainWindow = new BrowserWindow(browserWindowOptions);
 
   if (opts.disableMenu) {
     Menu.setApplicationMenu(null)
@@ -231,7 +231,7 @@ function createWindow () {
 
   //
 
-    function onBeforeUnload (e, BrowserWindow) { // Working: but window is still always closed
+  function onBeforeUnload(e, BrowserWindow) { // Working: but window is still always closed
     /*  e.preventDefault();
       e.returnValue = false;
      {
@@ -255,8 +255,8 @@ function createWindow () {
         e.returnValue = false;
         return choice;
       }*/
-      mainWindow._events.close = null; // Unreference function show that App can close
-      e.returnValue = false;
+    mainWindow._events.close = null; // Unreference function show that App can close
+    e.returnValue = false;
   }
   // Emitted when the window is going to be closed, but it's still opened.
   mainWindow.on('close', onBeforeUnload);
