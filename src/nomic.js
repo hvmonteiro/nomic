@@ -1,21 +1,17 @@
-// 'use strict'; // jshint ignore:line
+'use strict'; // jshint ignore:line
 
-/* globals require: true, __dirname: true, process: true, esversion: 6 */
-
+// jshint esversion: 6
+/* globals require: true, __dirname: true, process: true, console: true */
+//
 // Copyright (c) 2017 Hugo V. Monteiro
-// // Use of this source code is governed by the GPL-2.0 license that can be
-// // found in the LICENSE file.
+// Use of this source code is governed by the GPL-2.0 license that can be
+// found in the LICENSE file.
 
 // Electron module
 const electron = require('electron');
 
-// Module to control application life.
+// Module to control application life and create native browser window.
 const {app, BrowserWindow} = electron;
-//const app = require('app');
-
-// Module to create native browser window.
-// const BrowserWindow = electron.BrowserWindow;
-//const BrowserWindow = require('browser-window');
 
 // Module to display a dialog box
 const dialog = require('electron').dialog;
@@ -40,6 +36,8 @@ var titleName = appName + ' ' + appVersion;
 var debug = false;
 var openPageURL = homePageURL;
 var configFileName = '';
+var menuConfigFileName = '';
+var cacheContent = true;
 
 var browserWindowOptions = {
   // width: 380,
@@ -85,6 +83,7 @@ opts
   .option('--no-resize', 'Doesn\'t allow the window to be resizable', false)
   .option('--no-border', 'Makes the window borderless', false)
   .option('--no-cache', 'Don\'t cache content', false)
+  .option('--test', 'Parse configurations, parameters and test if application execution is Ok.')
   .option('--dev', 'Enable development tools')
   .option('-d, --debug', 'Print debugging info')
 
@@ -211,7 +210,7 @@ function createWindow() {
   var mainWindow = new BrowserWindow(browserWindowOptions);
 
   if (opts.disableMenu) {
-    Menu.setApplicationMenu(null)
+    Menu.setApplicationMenu(null);
     mainWindow.setMenu(null);
   } else {
     Menu.setApplicationMenu(appMenu);
@@ -267,7 +266,16 @@ function createWindow() {
     mainWindow.loadURL(goToURL);
   });
 
-  mainWindow.show();
+  // This is only used to test if the application start without any problem,
+  // the application immediatly exits after this if everything is ok
+  if (process.argv[2] === '--test') {
+    console.log('Application Execution Test: Ok');
+    mainWindow._events.close = null; // Unreference function so that App can close
+    mainWindow.close();
+    app.quit();
+  } else {
+    mainWindow.show();
+  }
 } // function createWindow
 
 // This method will be called when Electron has finished

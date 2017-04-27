@@ -2,18 +2,30 @@
   "name": "nomic",
   "productName": "Nomic",
   "version": "0.0.1",
-  "main": "nomic.js",
+  "build": "0000",
+  "main": "src/nomic.js",
   "description": "A lightweight browser aimed as a frontend for legacy Web Applications or to be used as a Kiosk Browser.",
-  "scripts": {
-    "start": "electron nomic.js",
-    "clean": "grunt clean --verbose",
-    "test": "jshint nomic.js",
-    "exec-test": "electron src/majin.js --test",
-    "build": "./build.sh all"
+  "author": "Hugo V. Monteiro <hugo@hugovmonteiro.net> (https://www.hugovmonteiro.net/)",
+  "license" : "SEE LICENSE IN LICENSE.md",
+  "copyright": "Copyright (c) 2017, Hugo V. Monteiro",
+  "homepage": "https://github.com/hvmonteiro/nomic#readme",
+  "bugs": {
+    "url": "https://github.com/hvmonteiro/nomic/issues"
   },
-  "dependencies": {
-    "commander": "2.x.x",
-    "valid-url": "^1.0.9"
+  "scripts": {
+    "start": "electron src/nomic.js",
+    "clean": "grunt clean",
+    "test": "grunt jshint",
+    "exec-test": "electron src/nomic.js --test",
+    "build": "npm run dist:linux && npm run dist:windows && npm run dist:mac",
+    "dev": "NODE_ENV='development' npm run start",
+    "dist:mac": "build --projectDir ./src -c electron-builder.yml --mac --x64 --ia32",
+    "dist:linux": "build --projectDir ./src -c electron-builder.yml --linux --x64 --ia32 --armv7l",
+    "dist:windows": "build --projectDir ./src -c electron-builder.yml --win --x64 --ia32",
+    "preversion": "npm run test && npm run exec-test",
+    "version": "",
+    "postversion": "#git push && git push --tags && npm clean",
+    "release": "npm version minor && npm run build"
   },
   "repository": {
     "type": "git",
@@ -28,15 +40,34 @@
     "desktop",
     "launcher",
     "application",
-    "lightweight"
+    "lightweight",
+    "desktop"
   ],
-  "author": "Hugo V. Monteiro",
-  "license": "GPL-2.0",
-  "bugs": {
-    "url": "https://github.com/hvmonteiro/nomic/issues"
-  },
-  "homepage": "https://github.com/hvmonteiro/nomic#readme",
   "devDependencies": {
-    "electron-packager": "7.x.x"
-  }
+    "electron": "^1.6.6",
+    "valid-url": "^1.0.9",
+    "commander": "^2.9.0",
+    "electron-builder": "^17.1.1",
+    "jshint": "^2.9.4",
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "load-grunt-tasks": "^3.5.2"
+  },
+  "engines": {
+    "node": "6.10.x",
+    "npm": "4.5.x",
+    "electron": "1.6.4"
+  },
+  "os": [
+    "darwin",
+    "mas",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "ia32"
+  ],
+  "private": true
 }

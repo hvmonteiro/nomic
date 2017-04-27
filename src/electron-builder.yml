@@ -1,0 +1,44 @@
+---
+appId: "net.hugovmonteiro.app.nomic"
+asar: true
+files:
+  - "./!**"
+  - "./nomic.js"
+  - "./package.json"
+  - "./version.json"
+  - "./assets/**"
+  - "./images/**"
+  - "./LICENSE"
+linux:
+  icon: "./assets/icons/png"
+  category: Network
+  packageCategory: Network
+  target:
+      #    - deb
+    - rpm
+      #    - tar.gz
+      #    - AppImage
+  executableName: nomic
+mac:
+  category: "net.hugovmonteiro.app.nomic"
+  icon: "./assets/icons/mac/icon.icns"
+  target: 
+    - zip
+#    - dmg
+win:
+  icon: "./assets/icons/win/icon.ico"
+  target:
+    - nsis
+nsis:
+  installerIcon: "./assets/icons/win/icon.ico"
+  deleteAppDataOnUninstall: true
+  artifactName: "${productName}-${version}-setup.${ext}"
+  oneClick: false
+  runAfterFinish: true
+#  publish:
+#    provider: "generic"
+#    url: "file:///tmp"
+#    owner: "hvmonteiro"
+#    token: ""
+#    repo: "nomic"
+
