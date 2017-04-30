@@ -1,0 +1,77 @@
+language: node_js
+
+node_js:
+  - 6.10.2
+
+notifications:
+  email: true
+
+env:
+  global:
+  - NPM_CONFIG_PROGRESS="true"
+
+sudo: true
+
+addons:
+  apt:
+    packages:
+    - zip
+
+before_install:
+  - npm install --save-dev
+
+install: true
+
+before_script:
+ - echo "Testing for syntax, module dependencies and application execution errors ..." 
+ - npm install electron grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-contrib-copy grunt-exec grunt-mkdir grunt-version grunt-zip load-grunt-tasks --quiet
+ - npm run clean
+ - npm test --quiet
+
+script:
+  - grunt --verbose
+
+after_script:
+  - echo "Finished Testing."
+after_success:
+  - echo "Build Successful"
+after_failure:
+  - echo "WARNING: Build unsuccessful!!!"
+
+before_deploy: 
+   - echo "Creating Linux AppImage..."
+   - npm run dist-linux
+   - echo "Creating Windows installation packages..."
+   - npm run dist-windows
+   - echo "Creating MacOS installation packagese..."
+   - npm run dist-mac
+   - ls -la src/dist/
+
+
+deploy:
+  provider: releases
+#  prerelease: true
+  strategy: git
+  skip_cleanup: true
+  app: Nomic
+  file: 
+    - src/dist/*.zip
+    - src/dist/*.dmg
+    - src/dist/*.pkg
+    - src/dist/*.exe
+    - src/dist/*.deb
+    - src/dist/*.rpm
+    - src/dist/*.tar.gz
+    - src/dist/*.AppImage
+  file_glob: true
+  overwrite: true
+  on:
+    tags: true
+    repo: hvmonteiro/nomic
+    all_branches: true
+  api_key:
+    secure: Fe/PGI1j4e/goipNJ5BoBDKo+04UHUU4mZ0lnmYQASd0aMn4PAlS+En7aE+jPTkIhsdC20bMqN9om+k9B7DbiVCawlk6MggF5lzTH+z+ulbR9MsjpHMinhN10fj+BMsvyxjtBcfc7yc56Elxbk8vkCrznS9nzN9hY63+FVlBji4nhcp5kmKvTYlsNwFBlbaEr6vkAYExjbxXO6569RV0jWowCeRAcZTz6hDJDWihsaN5dYL6oMFPS8H2jTMx/DVVVMl4iFYsv6vf9WwFeaQPmaIAWpwzsyqvSwIrF5w73hqp4ztKFdWGATv2o6TQoGIEtf6U/rRmtUI5qQG70BodUmMOaNP5zT40W5w/WjScAIuYwZaGdH4BsoNd7z3/5dfurZIRrprTScMczE8iYx6o4CpTRMyqIFUOcVPzUSe/6b8p0eGXZ5nYbhhrQDK3tv3KrZO+jdSaoKRHZu7SO/ZKNsAc4F/K7oaF8WcIFxsb7Bfwf+ESNStm5ZXfF43OoCRfb6z7q4473JLd+d0v0Ao9MG+Eifg9EyjcCm4whfyjJYmIxpu9zx43lJhlrv60y8qVZfjGjiBCHxhq+ux8g8sGI4TIwQQod7r3J7cfENzxnRcOx0zhee7rn5tJQn5w0lzgLTDyoWPgguu6s1vqTG5SmjI0nAdxUlAUU7iHjdwFZkY=
+
+after_deploy:
+  - echo "GitHub packages deploy finished."
+
