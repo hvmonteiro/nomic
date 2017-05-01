@@ -26,5 +26,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   require('load-grunt-tasks')(grunt);
 
-  grunt.registerTask('test', ['clean', 'jshint', 'exec']);
+//  grunt.registerTask('test', ['clean', 'jshint', 'exec']);
+  grunt.registerTask('test', ['clean', 'jshint']);
 };
