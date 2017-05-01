@@ -27,5 +27,5 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
 
 //  grunt.registerTask('test', ['clean', 'jshint', 'exec']);
-  grunt.registerTask('test', ['clean', 'jshint']);
+  grunt.registerTask('default', ['clean', 'jshint']);
 };
