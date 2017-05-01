@@ -72,4 +72,3 @@ deploy:
 
 after_deploy:
   - echo "GitHub packages deploy finished."
-
