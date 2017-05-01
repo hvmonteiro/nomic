@@ -22,6 +22,7 @@ module.exports = function (grunt) {
 
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-exec');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   require('load-grunt-tasks')(grunt);
 
