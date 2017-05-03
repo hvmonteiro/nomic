@@ -5,7 +5,7 @@
   "build": "0000",
   "description": "A lightweight browser aimed as a frontend for legacy Web Applications or to be used as a Kiosk Browser.",
   "author": "Hugo V. Monteiro <hugo@hugovmonteiro.net> (https://www.hugovmonteiro.net/)",
-  "license" : "SEE LICENSE IN LICENSE.md",
+  "license": "SEE LICENSE IN LICENSE.md",
   "copyright": "Copyright (c) 2017, Hugo V. Monteiro",
   "homepage": "https://github.com/hvmonteiro/nomic#readme",
   "bugs": {
@@ -13,6 +13,7 @@
   },
   "main": "nomic.js",
   "scripts": {
+    "prestart": "npm install --save",
     "start": "electron nomic.js",
     "exec-test": "electron nomic.js --test"
   },
@@ -30,6 +31,9 @@
   ],
   "devDependencies": {
     "electron": "^1.6.6",
+    "path": "^0.12.7"
+  },
+  "dependencies": {
     "commander": "^2.9.0",
     "valid-url": "^1.0.9"
   },

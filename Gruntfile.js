@@ -14,18 +14,21 @@ module.exports = function (grunt) {
       }
     },
     exec: {
-      list_files: {
-        cmd: 'electron src/nomic.js --test'
+      run_tests: {
+        cmd: 'npm run exec-test'
+      },
+      install_dependencies: {
+        cmd: 'cd ./src && npm install --save'
       }
     }
   });
 
   // These plugins provide necessary tasks.
-  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-exec');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   require('load-grunt-tasks')(grunt);
 
-//  grunt.registerTask('test', ['clean', 'jshint', 'exec']);
-  grunt.registerTask('default', ['clean', 'jshint']);
+  grunt.registerTask('test', ['exec', 'jshint']);
+  grunt.registerTask('default', ['clean', 'exec', 'jshint']);
 };

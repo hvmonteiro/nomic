@@ -2,3 +2,4 @@ build/*
 node_modules/*
 version.json
 src/dist/*
+src/node_modules/*

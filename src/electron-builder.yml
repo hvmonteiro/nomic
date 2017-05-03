@@ -5,6 +5,7 @@ files:
   - "./!**"
   - "./nomic.js"
   - "./package.json"
+  - "./node_modules/**"
   - "./version.json"
   - "./assets/**"
   - "./images/**"
