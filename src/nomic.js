@@ -27,7 +27,7 @@ const Menu = electron.Menu;
 
 
 const appName = 'nomic';
-const appVersion = '0.1';
+const appVersion = '0.0.1';
 const homePageURL = 'file://' + path.join(__dirname, '/usage.txt');
 
 const browserOptions = {};
@@ -58,10 +58,24 @@ var browserWindowOptions = {
 // Module to parse command line arguments
 var opts = require('commander');
 
-var myArgs = process.argv.slice(2);
+        
+//opts.parse(process.argv);
+//console.log('opts.args: %j', opts.args);
+//console.log('process.argv: %j', process.argv);
+//console.log('process.argv.length: %s', process.argv.length);
+if (path.basename(process.argv[0]) === 'nomic')  {
+//    console.log('slice');
+//    console.log(process.argv.slice(1));
+    var myArgs = process.argv.slice(1);
+} else {
+//    console.log('Didn\'t slice');
+    var myArgs = process.argv;
+}
+
 
 opts
-  .version('0.0.1')
+  .version(appVersion)
+  .option('-u, --url <address>', 'Open specified URL ', homePageURL)
   .option('-t, --title <title>', 'Sets window title name', titleName)
   .option('-c , --config <file>', 'Configuration file in JSON format with options', path.resolve(process.cwd()) + '/nomic.json')
   .option('--custom-menu <file>', 'Configuration file in JSON format to have customized menus instead of the default.', path.resolve(process.cwd()) + '/menu.json')
@@ -90,14 +104,20 @@ opts
   .option('-d, --debug', 'Print debugging info')
   .parse(process.argv);
 
-if (typeof myArgs != null) {
-    console.log(myArgs);
-//  opts.parse(myArgs[0]);
-    console.log('Process argv: %j', process.argv);
-    // opts.parse(myArgs[0]));
-} 
-    process.exit(1);
+//console.log('opts.args: %j', opts.args);
+//console.log('opts.args[0]: %s', opts.args[0]);
+//process.exit(1);
+//openPageURL = (opts.args[0] === 'undefined' ) ? homePageURL : opts.args[0]; // Set the URL to open
 
+// Validate URL
+if (opts.url)   {
+    if (!validUrl.isUri(opts.url)) {
+        console.log('Invalid URL: %s', opts.url);
+        process.exit(1);
+    } else    {
+        openPageURL = opts.url;
+    }
+}
 if (opts.title) browserWindowOptions.title = opts.title;
 if (opts.config) configFileName = opts.config;
 if (opts.customMenu) menuConfigFileName = opts.customMenu;
@@ -122,12 +142,10 @@ if (opts.noResize) browserWindowOptions.resizable = false;
 if (opts.noBorder) browserWindowOptions.frame = false;
 if (opts.noCache) cacheContent = false;
 if (opts.dev) BrowserWindow.devTools = true;
-if (myArgs[0] != null) {
-    openPageURL = opts.args[0]; // Set the URL to open
-}
+
 
 // Debug Log
-//if (opts.debug) {
+if (opts.debug) {
   console.log(opts);
   console.log('Arguments specified: %j', process.argv);
   console.log('OpenPageURL: %j', openPageURL);
@@ -138,14 +156,10 @@ if (myArgs[0] != null) {
   console.log('browserWindowOptions: ');
   console.log(browserWindowOptions);
   console.log('opts.args: %j', opts.args);
-  console.log('myArgs: %j', myArgs);
-//}
-
-// Validate URL
-if (!validUrl.isUri(openPageURL)) {
-  console.log('Invalid URL: %s', openPageURL);
-  process.exit(1);
+  console.log('process.argv: %j', process.argv);
 }
+
+
 
 var mainWindow = null;
 var appMenu = null;
