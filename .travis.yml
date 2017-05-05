@@ -24,7 +24,7 @@ install: true
 
 before_script:
  - echo "Testing for syntax, module dependencies and application execution errors ..." 
- - npm install electron grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-contrib-copy grunt-exec grunt-mkdir grunt-version grunt-zip load-grunt-tasks --quiet
+ - npm install electron grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-exec grunt-version load-grunt-tasks --quiet
 
 script:
   - grunt --verbose
