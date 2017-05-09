@@ -15,6 +15,7 @@
   "scripts": {
     "start": "electron src/nomic.js",
     "clean": "grunt clean",
+    "clean-deps": "rm -rf ./node_modules ./src/node_modules",
     "test": "grunt test",
     "exec-test": "electron src/nomic.js --test",
     "build": "npm run dist:linux && npm run dist:windows && npm run dist:mac",

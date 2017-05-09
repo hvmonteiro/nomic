@@ -14,11 +14,11 @@ module.exports = function (grunt) {
       }
     },
     exec: {
-      run_tests: {
-        cmd: 'npm run exec-test'
-      },
       install_dependencies: {
         cmd: 'cd ./src && npm install --save'
+      },
+      run_tests: {
+        cmd: 'npm run exec-test'
       }
     }
   });

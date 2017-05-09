@@ -23,10 +23,10 @@ before_install:
 install: true
 
 before_script:
- - echo "Testing for syntax, module dependencies and application execution errors ..." 
- - npm install electron grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-exec grunt-version load-grunt-tasks --quiet
+  - #npm install electron electron-builder grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-exec grunt-version load-grunt-tasks --quiet
 
 script:
+  - echo "Testing for syntax, module dependencies and application execution errors ..." 
   - grunt --verbose
 
 after_script:
@@ -38,11 +38,11 @@ after_failure:
 
 before_deploy: 
    - echo "Creating Linux AppImage..."
-   - npm run dist-linux
+   - npm run dist:linux
    - echo "Creating Windows installation packages..."
-   - npm run dist-windows
+   - npm run dist:windows
    - echo "Creating MacOS installation packagese..."
-   - npm run dist-mac
+   - npm run dist:mac
    - ls -la src/dist/
 
 
@@ -72,3 +72,4 @@ deploy:
 
 after_deploy:
   - echo "GitHub packages deploy finished."
+
