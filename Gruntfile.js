@@ -15,7 +15,7 @@ module.exports = function (grunt) {
     },
     exec: {
       install_dependencies: {
-        cmd: 'cd ./src && npm install --save'
+        cmd: 'cd ./src && npm install --save ; cd ..'
       },
       run_tests: {
         cmd: 'npm run exec-test'
@@ -29,6 +29,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   require('load-grunt-tasks')(grunt);
 
-  grunt.registerTask('test', ['exec', 'jshint']);
-  grunt.registerTask('default', ['clean', 'exec', 'jshint']);
+  grunt.registerTask('test', ['jshint', 'exec']);
+  grunt.registerTask('default', ['jshint', 'clean', 'exec']);
 };
