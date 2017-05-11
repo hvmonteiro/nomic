@@ -15,6 +15,7 @@ addons:
     packages:
     - zip
     - rpm
+    - wine
 
 before_install:
   - npm install --save-dev
