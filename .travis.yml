@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - 6.10.2
+  - 6.10
 
 notifications:
   email: true
@@ -18,7 +18,7 @@ addons:
     - wine
 
 before_install:
-  - npm install --save-dev
+  - npm install --save-dev --quiet
 
 install: true
 

@@ -15,7 +15,7 @@ module.exports = function (grunt) {
     },
     exec: {
       install_dependencies: {
-        cmd: 'cd ./src && npm install --save ; cd ..'
+        cmd: 'cd ./src && npm install --save --quiet ; cd ..'
       },
       run_tests: {
         cmd: 'npm run exec-test ; echo Tested'
