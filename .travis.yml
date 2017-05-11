@@ -10,12 +10,11 @@ env:
   global:
   - NPM_CONFIG_PROGRESS="true"
 
-sudo: true
-
 addons:
   apt:
     packages:
     - zip
+    - rpm
 
 before_install:
   - npm install --save-dev
