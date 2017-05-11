@@ -18,7 +18,7 @@ module.exports = function (grunt) {
         cmd: 'cd ./src && npm install --save ; cd ..'
       },
       run_tests: {
-        cmd: 'npm run exec-test'
+        cmd: 'npm run exec-test ; echo Tested'
       }
     }
   });
