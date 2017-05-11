@@ -36,6 +36,7 @@ after_failure:
   - echo "WARNING: Build unsuccessful!!!"
 
 before_deploy: 
+   - unset DISPLAY
    - echo "Creating Linux AppImage..."
    - npm run dist:linux
    - echo "Creating Windows installation packages..."
