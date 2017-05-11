@@ -2,7 +2,7 @@
   "name": "nomic",
   "productName": "Nomic",
   "version": "0.0.1",
-  "build": "0000",
+  "build": "0001",
   "main": "src/nomic.js",
   "description": "A lightweight browser aimed as a frontend for legacy Web Applications or to be used as a Kiosk Browser.",
   "author": "Hugo V. Monteiro <hugo@hugovmonteiro.net> (https://www.hugovmonteiro.net/)",
