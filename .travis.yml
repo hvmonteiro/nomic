@@ -1,7 +1,10 @@
 language: node_js
+dist: trusty
+
+sudo: required
 
 node_js:
-  - 6.10
+  - "7"
 
 notifications:
   email: true
@@ -14,8 +17,6 @@ addons:
   apt:
     packages:
     - zip
-    - rpm
-    - wine
 
 before_install:
   - npm install --save-dev --quiet
@@ -24,6 +25,9 @@ install: true
 
 before_script:
   - #npm install electron electron-builder grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-exec grunt-version load-grunt-tasks --quiet
+  - sudo add-apt-repository ppa:ubuntu-wine/ppa -y
+  - sudo apt-get update
+  - sudo apt-get install --no-install-recommends -y wine1.8 rpm icnsutils graphicsmagick xz-utils
 
 script:
   - echo "Testing for syntax, module dependencies and application execution errors ..." 
