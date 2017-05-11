@@ -21,13 +21,13 @@ addons:
 before_install:
   - npm install --save-dev --quiet
 
-install: true
+install:
+  - sudo add-apt-repository ppa:ubuntu-wine/ppa -y
+  - sudo apt-get update
+  - sudo apt-get install --no-install-recommends -y wine1.8 rpm icnsutils graphicsmagick xz-utils gcc-multilib g++-multilib
 
 before_script:
   - #npm install electron electron-builder grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-exec grunt-version load-grunt-tasks --quiet
-  - sudo add-apt-repository ppa:ubuntu-wine/ppa -y
-  - sudo apt-get update
-  - sudo apt-get install --no-install-recommends -y wine1.8 rpm icnsutils graphicsmagick xz-utils
 
 script:
   - echo "Testing for syntax, module dependencies and application execution errors ..." 
@@ -35,14 +35,19 @@ script:
 
 after_script:
   - echo "Finished Testing."
+
 after_success:
   - echo "Build Successful"
+  - echo "Triggering Latest-Devel build."
+  - echo "git tag -a latest-devel HEAD -f"
+  - echo "git push origin master --tag -f"
+
 after_failure:
   - echo "WARNING: Build unsuccessful!!!"
 
 before_deploy: 
    - unset DISPLAY
-   - echo "Creating Linux AppImage..."
+   - echo "Creating Linux installation packages..."
    - npm run dist:linux
    - echo "Creating Windows installation packages..."
    - npm run dist:windows
