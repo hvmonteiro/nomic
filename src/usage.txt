@@ -5,6 +5,7 @@
 
     -h, --help            output usage information
     -V, --version         output the version number
+    -u, --url <address>   Open specified URL 
     -t, --title <title>   Sets window title name
     -c , --config <file>  Configuration file in JSON format with options
     --custom-menu <file>  Configuration file in JSON format to have customized menus instead of the default.
@@ -21,13 +22,14 @@
     --center              Centers the window in the middle of the desktop
     --disable-menu        Disables all Menus. (default: always shown)
     --autohide-menu       Sets the Menu to automatically hide when not in use. (default: always shown)
-    --minimizable         Sets if the window is allowed to be minimized. (default: true)
-    --maximizable         Sets if the window is allowed to be maximized. (default: true)
+    --no-minimize         Sets if the window is allowed to be minimized. (default: false)
+    --no-maximize         Sets if the window is allowed to be maximized. (default: false)
     --skip-taskbar        When specified, the application window will not appear in desktop task bar.
     --on-top              Sets whether the window should show always on top of other windows.
-    --no-resizable        Doesn't allow the window to be resizable
+    --no-resize           Doesn't allow the window to be resizable
     --no-border           Makes the window borderless
     --no-cache            Don't cache content
+    --test                Parse configurations, parameters and test if application execution is Ok.
     --dev                 Enable development tools
     -d, --debug           Print debugging info
 

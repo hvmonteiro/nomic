@@ -63,14 +63,14 @@ var opts = require('commander');
 //console.log('opts.args: %j', opts.args);
 //console.log('process.argv: %j', process.argv);
 //console.log('process.argv.length: %s', process.argv.length);
-if (path.basename(process.argv[0]) === 'nomic')  {
+//-if (path.basename(process.argv[0]) === 'nomic')  {
 //    console.log('slice');
 //    console.log(process.argv.slice(1));
-    var myArgs = process.argv.slice(1);
-} else {
+//-    var myArgs = process.argv.slice(1);
+//_} else {
 //    console.log('Didn\'t slice');
-    var myArgs = process.argv;
-}
+//-    var myArgs = process.argv;
+//-}
 
 
 opts
@@ -103,11 +103,6 @@ opts
   .option('--dev', 'Enable development tools')
   .option('-d, --debug', 'Print debugging info')
   .parse(process.argv);
-
-//console.log('opts.args: %j', opts.args);
-//console.log('opts.args[0]: %s', opts.args[0]);
-//process.exit(1);
-//openPageURL = (opts.args[0] === 'undefined' ) ? homePageURL : opts.args[0]; // Set the URL to open
 
 // Validate URL
 if (opts.url)   {
@@ -147,12 +142,12 @@ if (opts.dev) BrowserWindow.devTools = true;
 // Debug Log
 if (opts.debug) {
   console.log(opts);
-  console.log('Arguments specified: %j', process.argv);
-  console.log('OpenPageURL: %j', openPageURL);
   console.log('----------------');
   console.log(require('module').globalPaths);
   console.log(require('electron'));
   console.log('----------------');
+  console.log('Arguments specified: %j', process.argv);
+  console.log('OpenPageURL: %j', openPageURL);
   console.log('browserWindowOptions: ');
   console.log(browserWindowOptions);
   console.log('opts.args: %j', opts.args);

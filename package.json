@@ -17,7 +17,7 @@
     "clean": "grunt clean",
     "clean-deps": "rm -rf ./node_modules ./src/node_modules",
     "test": "grunt test",
-    "exec-test": "electron src/nomic.js --test",
+    "exec-test": "./node_modules/.bin/electron src/nomic.js --test",
     "build": "npm run dist:linux && npm run dist:windows && npm run dist:mac",
     "dev": "NODE_ENV='development' npm run start",
     "dist:mac": "build --projectDir ./src -c electron-builder.yml --mac --x64 --ia32",
