@@ -24,7 +24,7 @@ before_install:
 install:
   - sudo add-apt-repository ppa:ubuntu-wine/ppa -y
   - sudo apt-get update
-  - sudo apt-get install --no-install-recommends -y wine1.8 rpm icnsutils graphicsmagick xz-utils gcc-multilib g++-multilib libstdc++
+  - sudo apt-get install --no-install-recommends -y wine1.8 rpm icnsutils graphicsmagick xz-utils gcc-multilib g++-multilib libstdc++6-4.6
 
 before_script:
   - #npm install electron electron-builder grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-exec grunt-version load-grunt-tasks --quiet
@@ -40,7 +40,7 @@ after_success:
   - echo "Build Successful"
   - echo "Triggering Latest-Devel build."
   - echo "git tag -a latest-devel HEAD -f"
-  - echo "git push origin master --tag -f"
+  - echo "git push origin master --tag -f -m 'Latest development release (automatic trigger)'"
 
 after_failure:
   - echo "WARNING: Build unsuccessful!!!"
