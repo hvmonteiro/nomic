@@ -101,8 +101,9 @@ opts
   .option('--no-cache', 'Don\'t cache content', false)
   .option('--test', 'Parse configurations, parameters and test if application execution is Ok.')
   .option('--dev', 'Enable development tools')
-  .option('-d, --debug', 'Print debugging info')
-  .parse(process.argv);
+  .option('-d, --debug', 'Print debugging info');
+
+if (process.argv.length > 2 ) opts.parse([""].concat(process.argv));
 
 // Validate URL
 if (opts.url)   {
