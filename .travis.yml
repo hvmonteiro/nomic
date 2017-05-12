@@ -24,7 +24,7 @@ before_install:
 install:
   - sudo add-apt-repository ppa:ubuntu-wine/ppa -y
   - sudo apt-get update
-  - sudo apt-get install --no-install-recommends -y wine1.8 rpm icnsutils graphicsmagick xz-utils gcc-multilib g++-multilib libstdc++6-4.7-dev
+  - sudo apt-get install --no-install-recommends -y wine1.8 rpm icnsutils graphicsmagick xz-utils gcc-multilib g++-multilib libstdc++6-4.7-dev libstdc++
 
 before_script:
   - #npm install electron electron-builder grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-exec grunt-version load-grunt-tasks --quiet
