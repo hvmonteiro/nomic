@@ -25,6 +25,8 @@ install:
   - wget -q https://dl.winehq.org/wine-builds/Release.key
   - sudo apt-key add Release.key
   - sudo apt-add-repository 'https://dl.winehq.org/wine-builds/ubuntu/'
+  - sudo rm /var/lib/apt/lists/* -vf
+  - sudo rm /var/lib/apt/lists/partials/* -vf
   - sudo apt-get -qq update
   - sudo apt-get -qq install --no-install-recommends -y wine-stable zip rpm icnsutils graphicsmagick xz-utils gcc-multilib g++-multilib libstdc++6
 
