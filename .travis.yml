@@ -26,7 +26,7 @@ install:
   - sudo apt-key add Release.key
   - sudo apt-add-repository 'https://dl.winehq.org/wine-builds/ubuntu/'
   - sudo apt-get -qq update
-  - sudo apt-get -qq install --no-install-recommends -y wine1.8 zip rpm icnsutils graphicsmagick xz-utils gcc-multilib g++-multilib libstdc++6
+  - sudo apt-get -qq install --no-install-recommends -y wine-stable zip rpm icnsutils graphicsmagick xz-utils gcc-multilib g++-multilib libstdc++6
 
 before_script:
   - #npm install electron electron-builder grunt grunt-cli grunt-contrib-clean grunt-contrib-jshint grunt-exec grunt-version load-grunt-tasks --quiet
