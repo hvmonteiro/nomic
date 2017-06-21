@@ -6,7 +6,7 @@ module.exports = function (grunt) {
       build: ['build', 'src/packages', 'src/dist', 'src/node_modules']
     },
     jshint: {
-      all: ['Gruntfile.js', 'src/nomic.js', 'src/version.json']
+      all: ['Gruntfile.js', 'src/nomic.js', 'src/version.json', 'examples/*.js']
     },
     version: {
       nomic: {

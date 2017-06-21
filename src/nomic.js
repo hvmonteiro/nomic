@@ -35,8 +35,8 @@ const browserOptions = {};
 var titleName = appName + ' ' + appVersion;
 var debug = false;
 var openPageURL = homePageURL;
-var configFileName = '';
-var menuConfigFileName = '';
+var configFileName = 'nomic.json';
+var menuConfigFileName = 'menu.json';
 var cacheContent = true;
 
 var browserWindowOptions = {
@@ -103,7 +103,12 @@ opts
   .option('--dev', 'Enable development tools')
   .option('-d, --debug', 'Print debugging info');
 
-if (process.argv.length > 2 ) opts.parse([""].concat(process.argv));
+if (process.argv.length > 2 ) {
+    opts.parse([""].concat(process.argv));
+} else {
+    opts.help();
+}
+
 
 // Validate URL
 if (opts.url)   {
@@ -185,7 +190,7 @@ var mainMenu = [{
   submenu: [{
     label: 'Usage',
     click: function () {
-      mainWindow.loadURL('file://' + path.join(__dirname + '/usage.txt'), browserOptions);
+      mainWindow.loadURL('file://' + path.join(__dirname, '/usage.txt'), browserOptions);
     }
   }, {
     label: 'Learn More',
@@ -221,6 +226,8 @@ var mainMenu = [{
 appMenu = Menu.buildFromTemplate(mainMenu);
 
 app.setName(appName);
+// Application User Model ID (AUMID) for notifications on Windows 8/8.1/10 to function
+//app.setAppUserModelId(appId);
 
 function createWindow() {
   // debug
@@ -240,8 +247,7 @@ function createWindow() {
     mainWindow.setMenu(appMenu);
   }
 
-
-  // mainWindow.loadURL('about:config', browserOptions);
+// mainWindow.loadURL('about:config', browserOptions);
   mainWindow.loadURL(openPageURL, browserOptions);
 
   mainWindow.on('show', function (BrowserWindow) {

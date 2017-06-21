@@ -13,7 +13,7 @@
     "url": "https://github.com/hvmonteiro/nomic/issues"
   },
   "scripts": {
-    "start": "electron src/nomic.js",
+    "start": "electron-forge start",
     "clean": "grunt clean",
     "clean-deps": "rm -rf ./node_modules ./src/node_modules",
     "test": "grunt test",
@@ -26,7 +26,9 @@
     "preversion": "npm run test && npm run exec-test",
     "version": "",
     "postversion": "#git push && git push --tags && npm clean",
-    "release": "npm version minor && npm run build"
+    "release": "npm version minor && npm run build",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "repository": {
     "type": "git",
@@ -45,23 +47,26 @@
     "desktop"
   ],
   "devDependencies": {
-    "electron": ">1.6.4",
-    "electron-builder": "16.6.x",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-react": "^6.24.1",
+    "electron-prebuilt-compile": "1.6.11",
     "grunt": "^1.0.1",
-    "grunt-exec": "^2.0.0",
-    "load-grunt-tasks": "^3.5.2",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-jshint": "^1.1.0",
-    "jshint": "^2.9.4"
+    "grunt-exec": "^2.0.0",
+    "jshint": "^2.9.4",
+    "load-grunt-tasks": "^3.5.2"
   },
   "dependencies": {
     "commander": "^2.9.0",
+    "electron-compile": "^6.4.1",
     "valid-url": "^1.0.9"
   },
   "engines": {
     "node": "6.10.x",
     "npm": "4.5.x",
-    "electron": "1.6.4"
+    "electron": "1.6.x"
   },
   "os": [
     "darwin",
@@ -73,5 +78,32 @@
     "x64",
     "ia32"
   ],
-  "private": true
+  "private": true,
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [ "squirrel", "zip" ],
+        "darwin": [ "dmg", "zip" ],
+        "linux": [ "deb", "rpm", "flatpak", "zip" ]
+      },
+      "electronPackagerConfig": {},
+      "electronWinstallerConfig": {
+        "name": ""
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "hvmonteiro",
+        "name": "nomic"
+      },
+      "windowsStoreConfig": {
+        "packageName": ""
+      },
+      "electronReleaseServer": {
+        "baseUrl": "https://www.younity-studios.com/products/nomic",
+        "username": "admin",
+        "password": "no_one_will_guess_this"
+      }
+    }
+  }
 }

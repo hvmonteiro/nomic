@@ -1,0 +1,17 @@
+{
+    "title": "appName",
+    "width": "400",
+    "height": "400",
+    "minWidth": "400",
+    "minHeight": "250",
+    "maxWidth": "400",
+    "maxHeight": "400",
+    "autoHideMenuBar": "false",
+    "maximizable": "false",
+    "skipTaskbar": "false",
+    "resizable": "true",
+    "closable": "false",
+    "show": "false",
+    "icon": "assets/icons/png/32x32.png"
+}
+

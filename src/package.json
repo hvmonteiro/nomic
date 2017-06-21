@@ -13,9 +13,8 @@
   },
   "main": "nomic.js",
   "scripts": {
-    "prestart": "npm install --save",
-    "start": "electron .",
-    "exec-test": "electron . --test"
+    "start": "electron nomic.js",
+    "exec-test": "electron nomic.js --test"
   },
   "keywords": [
     "nomic",
