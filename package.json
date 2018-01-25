@@ -50,6 +50,7 @@
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-env": "^1.5.2",
     "babel-preset-react": "^6.24.1",
+    "electron-forge": "^4.2.0",
     "electron-prebuilt-compile": "1.6.11",
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.1.0",
@@ -60,6 +61,7 @@
   },
   "dependencies": {
     "commander": "^2.9.0",
+    "electron": "^1.7.11",
     "electron-compile": "^6.4.1",
     "valid-url": "^1.0.9"
   },
@@ -82,9 +84,20 @@
   "config": {
     "forge": {
       "make_targets": {
-        "win32": [ "squirrel", "zip" ],
-        "darwin": [ "dmg", "zip" ],
-        "linux": [ "deb", "rpm", "flatpak", "zip" ]
+        "win32": [
+          "squirrel",
+          "zip"
+        ],
+        "darwin": [
+          "dmg",
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm",
+          "flatpak",
+          "zip"
+        ]
       },
       "electronPackagerConfig": {},
       "electronWinstallerConfig": {
