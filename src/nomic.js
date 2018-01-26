@@ -3,56 +3,57 @@
 // jshint esversion: 6
 /* globals require: true, __dirname: true, process: true, console: true */
 //
-// Copyright (c) 2017 Hugo V. Monteiro
+// Copyright (c) 2018 Hugo V. Monteiro
 // Use of this source code is governed by the GPL-2.0 license that can be
 // found in the LICENSE file.
+const APP_NAME = 'nomic';
+const APP_VERSION = '0.0.2';
 
 // Electron module to control application life and create native browser window.
-const {app, BrowserWindow, Menu} = require('electron');
-
-// Module to display a dialog box
-const dialog = require('electron').dialog;
-
-const path = require('path');
-
-// Validate Address URLs
-const validUrl = require('valid-url');
-
-
-const appName = 'nomic';
-const appVersion = '0.0.1';
-const homePageURL = 'file://' + path.join(__dirname, '/usage.txt');
+const electron = require('electron');
+const BrowserWindow = electron.BrowserWindow;
+const Menu = electron.Menu;
+const app = electron.app;
+const dialog = electron.dialog;
 
 const menuName = (process.platform === 'darwin') ? electron.remote.app.getName() : 'Menu';
 
-const browserOptionsSchema = {
+const path = require('path');
+const validUrl = require('valid-url');
 
-    url: "",
-    title: appName + ' (' + appVersion + ')',
-    icon: "",
-    fullscreen: false,
-    kiosk: false,
-    maximized: false,
-    width: 0,
-    height: 0,
-    minWidth: 0,
-    minHeight: 0,
-    maxWidth: 0,
-    maxHeight: 0,
-    center: false,
-    disableMenu: false,
-    autohideMenu: false,
-    noMinimize: false,
-    noMaximize: false,
-    skipTaskbar: false,
-    onTop: false,
-    noResize: false,
-    noBorder: false,
-    noCache: false,
-    test: false,
-    develTools: false,
+const homePageURL = 'file://' + path.join(__dirname, '/usage.txt');
+
+const programOptionsSchema = {
+
+    title: APP_NAME + ' (' + APP_VERSION + ')',
+    url: homePageURL,
     debug: false,
-    menu : [{
+    browserOptions: {
+        title: APP_NAME + ' (' + APP_VERSION + ')',
+        icon: path.join(__dirname, '/nomic.ico'),
+        fullscreen: false,
+        kiosk: false,
+        maximized: false,
+        width: 0,
+        height: 0,
+        minWidth: 0,
+        minHeight: 0,
+        maxWidth: 0,
+        maxHeight: 0,
+        center: false,
+        disableMenu: false,
+        autoHideMenu: false,
+        noMinimize: false,
+        noMaximize: false,
+        skipTaskbar: false,
+        onTop: false,
+        noResize: false,
+        noBorder: false,
+        noCache: false,
+        test: false,
+        develTools: false,
+    },
+    mainMenu : [{
         label: menuName,
         submenu: [{
             label: 'Quit',
@@ -87,7 +88,7 @@ const browserOptionsSchema = {
                 });
             }
         }, {
-            label: appName,
+            label: APP_NAME,
             click: function (item, BrowserWindow) {
                 let onTopOption = mainWindow.isAlwaysOnTop();
                 mainWindow.setAlwaysOnTop(false);
@@ -95,45 +96,79 @@ const browserOptionsSchema = {
                     'type': 'info',
                     'title': 'About',
                     buttons: ['Close'],
-                    'message': appName + '\nVersion ' + appVersion + '\nGPL 2.0 License'
+                    'message': APP_NAME + '\nVersion ' + APP_VERSION + '\nGPL 2.0 License'
                 });
                 mainWindow.setAlwaysOnTop(onTopOption);
             }
         }]
-    }]
+    }],
+    contextMenu: [],
+    sysContextMenu : [{
+          label: 'Show Window',
+          type: 'checkbox',
+          checked: true,
+          click: function (item, BrowserWindow) {
+            if (mainWindow.isVisible()) {
+              mainWindow.hide();
+              item.checked = false;
+            } else {
+              mainWindow.show();
+              item.checked = true;
+            }
+          }
+        }, {
+          label: 'On Top',
+          type: 'checkbox',
+          checked: true,
+          click: function (item, BrowserWindow) {
+            mainWindow.setAlwaysOnTop(item.checked);
+            appMenu.items[0].submenu.items[0].checked = item.checked;
+          }
+        }, {
+          type: 'separator'
+        }, {
+          label: 'Auto-Hide Menu Bar',
+          type: 'checkbox',
+          checked: false,
+          click: function (item, BrowserWindow) {
+            mainWindow.setAutoHideMenuBar(item.checked);
+            mainWindow.setMenuBarVisibility(!item.checked);
+            appMenu.items[0].submenu.items[5].checked = item.checked;
+          }
+        }, {
+          label: 'Quit',
+          accelerator: 'CmdOrCtrl+Q',
+          click: function (item, BrowserWindow) {
+            if (mainWindow) {
+              mainWindow._events.close = null; // Unreference function show that App can close
+              app.quit();
+            }
+          }
+        }]
 }
 
-const browserOptions = browserOptionsSchema;
+const programOptions = programOptionsSchema;
+const browserOptions = programOptions.browserOptions;
 
-var titleName = appName + ' ' + appVersion;
-var debug = false;
-var openPageURL = homePageURL;
-var profileFilename = 'nomic.json';
-var cacheContent = true;
+var titleName = programOptions.title;
+var debug = programOptions.debug
+var openPageURL = programOptions.url;
+var profileFilename = '';
+var cacheContent = browserOptions.noCache;
 
-var browserWindowOptions = {
-    // width: 380,
-    // height: 380,
-    // minWidth: 380,
-    // minHeight: 380,
-    // maxWidth: 380,
-    // maxHeight: 380,
-    title: titleName,
-    // autoHideMenuBar: true,
-    ////  maximizable: false,
-    // skipTaskbar: false,
-    // resizable: true,
-    show: false,
-    // icon: path.join(__dirname, 'images', 'icon@2.png')
-};
+var browserWindowOptions = { browserOptions, show : false };
+console.log(browserWindowOptions);
 
 // Module to parse command line arguments
 var opts = require('commander');
+/*
+if (process.defaultApp == true) {
+      process.argv.unshift(null)
+}
+*/
 
-
-    opts
-.version(appVersion)
-    .option('--url <address>', 'Open specified URL ', homePageURL)
+opts.version(APP_VERSION)
+    .usage('[options] <url>')
     .option('--title <title>', 'Sets window title name', titleName)
     .option('--profile <file>', 'Profile file with configuration parameters in JSON format', path.resolve(process.cwd()) + '/nomic.json')
     .option('--fullscreen', 'Launches in fullscreen mode', false)
@@ -159,25 +194,26 @@ var opts = require('commander');
     .option('--devel-tools', 'Enable development tools')
     .option('-d, --debug', 'Print debugging info');
 
-    if (process.argv.length > 2 ) {
-        opts.parse([""].concat(process.argv));
-    } else {
-        opts.help();
-    }
-
-
-// Validate URL
-if (opts.url)   {
-    if (!validUrl.isUri(opts.url)) {
-        console.log('Invalid URL: %s', opts.url);
-        process.exit(1);
-    } else    {
-        openPageURL = opts.url;
-    }
+if (process.argv.length > 2 ) {
+    opts.parse([""].concat(process.argv));
+} else {
+    opts.help();
 }
+var url = (opts.args[opts.args.length-1]);
+console.log(url);
+
+if (validUrl.isUri(url)) openPageURL = url;
+/*
+// Validate URL
+if (!validUrl.isUri(url)) {
+    console.log('Invalid URL: %s', url);
+    process.exit(1);
+} else    {
+    openPageURL = url;
+}
+*/
 if (opts.title) browserWindowOptions.title = opts.title;
-if (opts.config) profileFilename = opts.config;
-if (opts.customMenu) menuConfigFileName = opts.customMenu;
+if (opts.profile) profileFilename = opts.config;
 if (opts.iconFile) browserWindowOptions.icon = opts.iconFile;
 if (opts.kiosk) browserWindowOptions.kiosk = true;
 if (opts.fullscreen) browserWindowOptions.fullscreen = true;
@@ -198,7 +234,7 @@ if (opts.onTop) browserWindowOptions.alwaysOnTop = true;
 if (opts.noResize) browserWindowOptions.resizable = false;
 if (opts.noBorder) browserWindowOptions.frame = false;
 if (opts.noCache) cacheContent = false;
-if (opts.dev) BrowserWindow.devTools = true;
+if (opts.devel) BrowserWindow.devTools = true;
 
 
 // Debug Log
@@ -222,13 +258,13 @@ var mainWindow = null;
 var appMenu = null;
 
 
-process.name = appName;
+process.name = APP_NAME;
 
-var mainMenu = browserOptions.menu;
+var mainMenu = browserOptions.mainMenu;
 
 //appMenu = Menu.buildFromTemplate(mainMenu);
 
-app.setName(appName);
+app.setName(APP_NAME);
 // Application User Model ID (AUMID) for notifications on Windows 8/8.1/10 to function
 //app.setAppUserModelId(appId);
 
@@ -240,7 +276,7 @@ function createWindow() {
         console.log('openPageURL: ' + openPageURL);
     }
     // Create the browser window.
-    var mainWindow = new BrowserWindow(browserWindowOptions);
+    var mainWindow = new BrowserWindow();
 
     if (opts.disableMenu) {
         Menu.setApplicationMenu(null);
@@ -251,7 +287,8 @@ function createWindow() {
     }
 
     // mainWindow.loadURL('about:config', browserOptions);
-    mainWindow.loadURL(openPageURL, browserOptions);
+    //mainWindow.loadURL(openPageURL, browserOptions);
+    mainWindow.loadURL(openPageURL);
 
     mainWindow.on('show', function (BrowserWindow) {
     });
@@ -308,25 +345,25 @@ function createWindow() {
     } else {
         mainWindow.show();
     }
-    } // function createWindow
+} // function createWindow
 
-    // This method will be called when Electron has finished
-    // initialization and is ready to create browser windows.
-    app.on('ready', createWindow);
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+app.on('ready', createWindow);
 
-    // Quit when all windows are closed.
-    app.on('window-all-closed', function () {
-        // On OS X it is common for applications and their menu bar
-        // to stay active until the user quits explicitly with Cmd + Q
-        if (process.platform !== 'darwin') {
-            app.quit();
-        }
-    });
+// Quit when all windows are closed.
+app.on('window-all-closed', function () {
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
+});
 
-    app.on('activate', function () {
-        // On OS X it's common to re-create a window in the app when the
-        // dock icon is clicked and there are no other windows open.
-        if (mainWindow === null) {
-            createWindow();
-        }
-    });
+app.on('activate', function () {
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (mainWindow === null) {
+        createWindow();
+    }
+});

@@ -1,19 +1,20 @@
 {
   "name": "nomic",
   "productName": "Nomic",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "build": "0001",
   "main": "src/nomic.js",
-  "description": "A lightweight browser aimed as a frontend for legacy Web Applications or to be used as a Kiosk Browser.",
+  "description": "A lightweight browser aimed as a frontend for legacy Web Applications or Kiosk Browser.",
   "author": "Hugo V. Monteiro <hugo@hugovmonteiro.net> (https://www.hugovmonteiro.net/)",
   "license": "SEE LICENSE IN LICENSE.md",
-  "copyright": "Copyright (c) 2017, Hugo V. Monteiro",
+  "copyright": "Copyright (c) 2018, Hugo V. Monteiro",
   "homepage": "https://github.com/hvmonteiro/nomic#readme",
   "bugs": {
     "url": "https://github.com/hvmonteiro/nomic/issues"
   },
+  "main": "src/nomic.js",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "electron .",
     "clean": "grunt clean",
     "clean-deps": "rm -rf ./node_modules ./src/node_modules",
     "test": "grunt test",
