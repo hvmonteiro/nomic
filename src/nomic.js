@@ -157,7 +157,6 @@ var profileFilename = '';
 var cacheContent = browserOptions.noCache;
 
 var browserWindowOptions = { browserOptions, show : false };
-console.log(browserWindowOptions);
 
 // Module to parse command line arguments
 var opts = require('commander');
@@ -200,7 +199,6 @@ if (process.argv.length > 2 ) {
     opts.help();
 }
 var url = (opts.args[opts.args.length-1]);
-console.log(url);
 
 if (validUrl.isUri(url)) openPageURL = url;
 /*
