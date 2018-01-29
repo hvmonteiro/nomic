@@ -6,7 +6,7 @@
 // Copyright (c) 2018 Hugo V. Monteiro
 // Use of this source code is governed by the GPL-2.0 license that can be
 // found in the LICENSE file.
-const APP_NAME = 'nomic';
+const APP_NAME = 'Nomic';
 const APP_VERSION = '0.0.2';
 
 // Electron module to control application life and create native browser window.
@@ -34,10 +34,10 @@ const programOptionsSchema = {
         fullscreen: false,
         kiosk: false,
         maximized: false,
-        width: 0,
-        height: 0,
-        minWidth: 0,
-        minHeight: 0,
+        width: "70%",
+        height: "70%",
+        minWidth: 400,
+        minHeight: 400,
         maxWidth: 0,
         maxHeight: 0,
         center: false,
@@ -58,9 +58,9 @@ const programOptionsSchema = {
         submenu: [{
             label: 'Quit',
             accelerator: 'CmdOrCtrl+Q',
-            click: function (item, BrowserWindow) {
-                if (mainWindow) {
-                    mainWindow._events.close = null; // Unreference function show that App can close
+            click: function (item, browserWindow) {
+                if (browserWindow) {
+                    browserWindow._events.close = null; // Unreference function show that App can close
                     app.quit();
                 }
             }
@@ -69,8 +69,8 @@ const programOptionsSchema = {
         label: 'About',
         submenu: [{
             label: 'Usage',
-            click: function () {
-                mainWindow.loadURL('file://' + path.join(__dirname, '/usage.txt'), browserOptions);
+            click: function (item, browserWindow) {
+                browserWindow.loadURL('file://' + path.join(__dirname, '/usage.txt'), browserOptions);
             }
         }, {
             label: 'Learn More',
@@ -84,21 +84,21 @@ const programOptionsSchema = {
                     'type': 'info',
                     'title': 'License',
                     buttons: ['Close'],
-                    'message': ' '
+                    'message': 'GPL 2.0'
                 });
             }
         }, {
             label: APP_NAME,
-            click: function (item, BrowserWindow) {
-                let onTopOption = mainWindow.isAlwaysOnTop();
-                mainWindow.setAlwaysOnTop(false);
+            click: function (item, browserWindow) {
+                let onTopOption = browserWindow.isAlwaysOnTop();
+                browserWindow.setAlwaysOnTop(false);
                 dialog.showMessageBox({
                     'type': 'info',
                     'title': 'About',
                     buttons: ['Close'],
                     'message': APP_NAME + '\nVersion ' + APP_VERSION + '\nGPL 2.0 License'
                 });
-                mainWindow.setAlwaysOnTop(onTopOption);
+                browserWindow.setAlwaysOnTop(onTopOption);
             }
         }]
     }],
@@ -107,12 +107,12 @@ const programOptionsSchema = {
           label: 'Show Window',
           type: 'checkbox',
           checked: true,
-          click: function (item, BrowserWindow) {
-            if (mainWindow.isVisible()) {
-              mainWindow.hide();
+          click: function (item, browserWindow) {
+            if (browserWindow.isVisible()) {
+              browserWindow.hide();
               item.checked = false;
             } else {
-              mainWindow.show();
+              browserWindow.show();
               item.checked = true;
             }
           }
@@ -120,8 +120,8 @@ const programOptionsSchema = {
           label: 'On Top',
           type: 'checkbox',
           checked: true,
-          click: function (item, BrowserWindow) {
-            mainWindow.setAlwaysOnTop(item.checked);
+          click: function (item, browserWindow) {
+            browserWindow.setAlwaysOnTop(item.checked);
             appMenu.items[0].submenu.items[0].checked = item.checked;
           }
         }, {
@@ -130,17 +130,17 @@ const programOptionsSchema = {
           label: 'Auto-Hide Menu Bar',
           type: 'checkbox',
           checked: false,
-          click: function (item, BrowserWindow) {
-            mainWindow.setAutoHideMenuBar(item.checked);
-            mainWindow.setMenuBarVisibility(!item.checked);
+          click: function (item, browserWindow) {
+            browserWindow.setAutoHideMenuBar(item.checked);
+            browserWindow.setMenuBarVisibility(!item.checked);
             appMenu.items[0].submenu.items[5].checked = item.checked;
           }
         }, {
           label: 'Quit',
           accelerator: 'CmdOrCtrl+Q',
-          click: function (item, BrowserWindow) {
-            if (mainWindow) {
-              mainWindow._events.close = null; // Unreference function show that App can close
+          click: function (item, browserWindow) {
+            if (browserWindow) {
+              browserWindow._events.close = null; // Unreference function show that App can close
               app.quit();
             }
           }
@@ -156,7 +156,15 @@ var openPageURL = programOptions.url;
 var profileFilename = '';
 var cacheContent = browserOptions.noCache;
 
-var browserWindowOptions = { browserOptions, show : false };
+var appMenu = Menu.buildFromTemplate(programOptions.mainMenu);
+
+
+
+app.setName(APP_NAME);
+// Application User Model ID (AUMID) for notifications on Windows 8/8.1/10 to function
+//app.setAppUserModelId(appId);
+//var browserWindowOptions = browserOptions.push({show : false });
+var browserWindowOptions = browserOptions;
 
 // Module to parse command line arguments
 var opts = require('commander');
@@ -167,7 +175,8 @@ if (process.defaultApp == true) {
 */
 
 opts.version(APP_VERSION)
-    .usage('[options] <url>')
+    .usage('[options]')
+    .option('--url <address>', 'Open specified URL ', homePageURL)
     .option('--title <title>', 'Sets window title name', titleName)
     .option('--profile <file>', 'Profile file with configuration parameters in JSON format', path.resolve(process.cwd()) + '/nomic.json')
     .option('--fullscreen', 'Launches in fullscreen mode', false)
@@ -193,23 +202,20 @@ opts.version(APP_VERSION)
     .option('--devel-tools', 'Enable development tools')
     .option('-d, --debug', 'Print debugging info');
 
+process.name = programOptions.title;
+
 if (process.argv.length > 2 ) {
     opts.parse([""].concat(process.argv));
-} else {
-    opts.help();
 }
-var url = (opts.args[opts.args.length-1]);
 
-if (validUrl.isUri(url)) openPageURL = url;
-/*
 // Validate URL
-if (!validUrl.isUri(url)) {
-    console.log('Invalid URL: %s', url);
+if (!validUrl.isUri(opts.url)) {
+    console.log('Invalid URL: %s', opts.url);
     process.exit(1);
 } else    {
-    openPageURL = url;
+    openPageURL = opts.url;
 }
-*/
+
 if (opts.title) browserWindowOptions.title = opts.title;
 if (opts.profile) profileFilename = opts.config;
 if (opts.iconFile) browserWindowOptions.icon = opts.iconFile;
@@ -218,10 +224,10 @@ if (opts.fullscreen) browserWindowOptions.fullscreen = true;
 if (opts.maximized) browserWindowOptions.maximized = true;
 if (opts.width) browserWindowOptions.width = opts.width;
 if (opts.height) browserWindowOptions.width = opts.height;
-if (opts.minwidth) browserWindowOptions.minwidth = opts.minwidth;
-if (opts.minheight) browserWindowOptions.minwidth = opts.maxheight;
-if (opts.maxwidth) browserWindowOptions.maxwidth = opts.maxwidth;
-if (opts.maxheight) browserWindowOptions.maxwidth = opts.maxheight;
+if (opts.minwidth) browserWindowOptions.minWidth = opts.minwidth;
+if (opts.minheight) browserWindowOptions.minWidth = opts.maxheight;
+if (opts.maxwidth) browserWindowOptions.maxWidth = opts.maxwidth;
+if (opts.maxheight) browserWindowOptions.maxWidth = opts.maxheight;
 if (opts.center) browserWindowOptions.center = true;
 if (opts.disableMenu) browserWindowOptions.disableMenuBar = true;
 if (opts.autohideMenu) browserWindowOptions.autoHideMenuBar = true;
@@ -232,7 +238,8 @@ if (opts.onTop) browserWindowOptions.alwaysOnTop = true;
 if (opts.noResize) browserWindowOptions.resizable = false;
 if (opts.noBorder) browserWindowOptions.frame = false;
 if (opts.noCache) cacheContent = false;
-if (opts.devel) BrowserWindow.devTools = true;
+if (opts.devel) browserWindowOptions.devTools = true;
+if (opts.debug) programOptions.debug = true;
 
 
 // Debug Log
@@ -252,36 +259,26 @@ if (opts.debug) {
 
 
 
-var mainWindow = null;
-var appMenu = null;
-
-
-process.name = APP_NAME;
-
-var mainMenu = browserOptions.mainMenu;
-
-//appMenu = Menu.buildFromTemplate(mainMenu);
-
-app.setName(APP_NAME);
-// Application User Model ID (AUMID) for notifications on Windows 8/8.1/10 to function
-//app.setAppUserModelId(appId);
-
 function createWindow() {
     // debug
-    if (debug) {
-        console.log('browserWindowOptions');
-        console.log(browserWindowOptions);
+    if (opts.debug) {
+        console.log('browserOptions: ');
+        console.log(browserOptions);
+        console.log('programOptions: ');
+        console.log(programOptions);
         console.log('openPageURL: ' + openPageURL);
+        console.log('mainMenu: ');
+        console.log(programOptions.mainMenu);
     }
     // Create the browser window.
-    var mainWindow = new BrowserWindow();
+    var mainWindow = new BrowserWindow(browserOptions);
 
     if (opts.disableMenu) {
-        Menu.setApplicationMenu(null);
-        mainWindow.setMenu(null);
+        Menu.setApplicationMenu(null);  // for MacOS
+        mainWindow.setMenu(null);       // for Windows and Linux
     } else {
-        Menu.setApplicationMenu(appMenu);
-        mainWindow.setMenu(appMenu);
+        Menu.setApplicationMenu(appMenu);// for MacOS
+        mainWindow.setMenu(appMenu);     // for Windows and Linux
     }
 
     // mainWindow.loadURL('about:config', browserOptions);
@@ -292,7 +289,7 @@ function createWindow() {
     });
 
     mainWindow.on('page-title-updated', function (e) {
-        e.preventDefault();
+//        e.preventDefault();
     });
 
     //
