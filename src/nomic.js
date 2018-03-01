@@ -10,13 +10,9 @@ const APP_NAME = 'Nomic';
 const APP_VERSION = '0.0.2';
 
 // Electron module to control application life and create native browser window.
-const electron = require('electron');
-const BrowserWindow = electron.BrowserWindow;
-const Menu = electron.Menu;
-const app = electron.app;
-const dialog = electron.dialog;
+const {app, BrowserWindow, dialog, Menu, shell} = require('electron');
 
-const menuName = (process.platform === 'darwin') ? electron.remote.app.getName() : 'Menu';
+const menuName = (process.platform === 'darwin') ? app.getName() : 'Menu';
 
 const path = require('path');
 const validUrl = require('valid-url');
@@ -75,7 +71,7 @@ const programOptionsSchema = {
         }, {
             label: 'Learn More',
             click: function () {
-                electron.shell.openExternal('https://github.com/hvmonteiro/nomic');
+                shell.openExternal('https://github.com/hvmonteiro/nomic');
             }
         }, {
             label: 'License',
@@ -145,13 +141,13 @@ const programOptionsSchema = {
             }
           }
         }]
-}
+};
 
 const programOptions = programOptionsSchema;
 const browserOptions = programOptions.browserOptions;
 
 var titleName = programOptions.title;
-var debug = programOptions.debug
+var debug = programOptions.debug;
 var openPageURL = programOptions.url;
 var profileFilename = '';
 var cacheContent = browserOptions.noCache;
@@ -198,6 +194,7 @@ opts.version(APP_VERSION)
     .option('--no-resize', 'Doesn\'t allow the window to be resizable', false)
     .option('--no-border', 'Makes the window borderless', false)
     .option('--no-cache', 'Don\'t cache content', false)
+    .option('--no-proxy', 'Disables usage of the existing proxy configuration.', true)
     .option('--test', 'Parse configurations, parameters and test if application execution is Ok.')
     .option('--devel-tools', 'Enable development tools')
     .option('-d, --debug', 'Print debugging info');
@@ -258,6 +255,20 @@ if (opts.debug) {
 }
 
 
+var mainWindow = null;
+var appMenu = null;
+
+
+process.name = APP_NAME;
+
+var mainMenu = browserOptions.mainMenu;
+
+//appMenu = Menu.buildFromTemplate(mainMenu);
+
+app.setName(APP_NAME);
+// Application User Model ID (AUMID) for notifications on Windows 8/8.1/10 to function
+//app.setAppUserModelId(appId);
+
 
 function createWindow() {
     // debug
@@ -273,6 +284,9 @@ function createWindow() {
     // Create the browser window.
     var mainWindow = new BrowserWindow(browserOptions);
 
+    if (!opts.noProxy)    {
+        mainWindow.webContents.session.setProxy( { pacScript : '' }, function () { return true; });
+    }
     if (opts.disableMenu) {
         Menu.setApplicationMenu(null);  // for MacOS
         mainWindow.setMenu(null);       // for Windows and Linux
