@@ -194,7 +194,7 @@ opts.version(APP_VERSION)
     .option('--no-resize', 'Doesn\'t allow the window to be resizable', false)
     .option('--no-border', 'Makes the window borderless', false)
     .option('--no-cache', 'Don\'t cache content', false)
-    .option('--no-proxy', 'Disables usage of the existing proxy configuration.', true)
+    .option('--no-proxy', 'Disables usage of the existing proxy configuration.', false)
     .option('--test', 'Parse configurations, parameters and test if application execution is Ok.')
     .option('--devel-tools', 'Enable development tools')
     .option('-d, --debug', 'Print debugging info');
@@ -284,7 +284,7 @@ function createWindow() {
     // Create the browser window.
     var mainWindow = new BrowserWindow(browserOptions);
 
-    if (!opts.noProxy)    {
+    if (opts.noProxy)    {
         mainWindow.webContents.session.setProxy( { pacScript : '' }, function () { return true; });
     }
     if (opts.disableMenu) {
