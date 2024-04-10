@@ -3,29 +3,47 @@
 // jshint esversion: 6
 /* globals require: true, __dirname: true, process: true, console: true */
 //
-// Copyright (c) 2018 Hugo V. Monteiro
+// Copyright (c) 2024 Hugo V. Monteiro
 // Use of this source code is governed by the GPL-2.0 license that can be
 // found in the LICENSE file.
-const APP_NAME = 'Nomic';
-const APP_VERSION = '0.0.2';
+
+// Debug Log
+// console.log(require('module').globalPaths);
+// console.log(require('electron'));
 
 // Electron module to control application life and create native browser window.
-const {app, BrowserWindow, dialog, Menu, shell} = require('electron');
+const { app, BrowserWindow, dialog, Menu, shell } = require('electron');
+const fs = require('fs');
+const path = require('path');
 
 const menuName = (process.platform === 'darwin') ? app.getName() : 'Menu';
 
-const path = require('path');
-const validUrl = require('valid-url');
+const { URL } = require('url');
 
-const homePageURL = 'file://' + path.join(__dirname, '/usage.txt');
+// Read application info directly from package.json
+const packageJson = require(path.join(__dirname, 'package.json'));
+
+// Default application JSON file to store profile settings between sessions
+const nomicProfileJson = path.join(__dirname, 'nomic.json');
+
+const homePageURL = `file://${path.join(__dirname, 'usage.txt')}`;
+
+const appName = packageJson.productName;
+const appVersion = packageJson.version;
+const appBuildId = packageJson.buildId;
+const appCopyright = packageJson.copyright;
+const appAuthor = packageJson.author;
+const appLicense = packageJson.license;
+const appWebURL = packageJson.homePage;
+const appSupportURL = packageJson.bugs.url;
 
 const programOptionsSchema = {
 
-    title: APP_NAME + ' (' + APP_VERSION + ')',
+    title: appName + ' (' + appVersion + ')',
     url: homePageURL,
     debug: false,
     browserOptions: {
-        title: APP_NAME + ' (' + APP_VERSION + ')',
+        title: appName + ' (' + appVersion + ')',
         icon: path.join(__dirname, '/nomic.ico'),
         fullscreen: false,
         kiosk: false,
@@ -54,11 +72,43 @@ const programOptionsSchema = {
         submenu: [{
             label: 'Quit',
             accelerator: 'CmdOrCtrl+Q',
-            click: function (item, browserWindow) {
-                if (browserWindow) {
-                    browserWindow._events.close = null; // Unreference function show that App can close
-                    app.quit();
-                }
+            click(event) {
+
+                const { width, height } = mainWindow.getBounds();
+                const { x, y } = mainWindow.getPosition();
+    
+                const dialogWidth = 300; // Width of the dialog
+                const dialogHeight = 150; // Height of the dialog
+    
+                const centerX = x + (width - dialogWidth) / 2;
+                const centerY = y + (height - dialogHeight) / 2;
+    
+                let onTopState = appMenu.items[0].submenu.items[0].checked;
+                mainWindow.setAlwaysOnTop(false);
+    
+                // Show a question dialog when attempting to close the window
+                dialog.showMessageBox(mainWindow, {
+                    type: 'question',
+                    buttons: ['Yes', 'No'],
+                    title: 'Confirm Quit',
+                    message: 'Are you sure you want to quit?',
+                    x: centerX,
+                    y: centerY
+                }).then(({ response }) => {
+                    mainWindow.show(); // show blured window again
+                    if (response === 0) { // Yes button clicked
+                        mainWindow._events.close = null; // Unreference function so that App can close
+                        event.returnValue = false;
+                        mainWindow.destroy(); // Close the window
+                        return 0;
+                    } else { // Option: No
+                        // Re-set previously saved OnTop state
+                        mainWindow.setAlwaysOnTop(onTopState);
+                        event.preventDefault();
+                        event.returnValue = true;
+                        return 1;
+                    }
+                });		
             }
         }]
     }, {
@@ -80,21 +130,45 @@ const programOptionsSchema = {
                     'type': 'info',
                     'title': 'License',
                     buttons: ['Close'],
-                    'message': 'GPL 2.0'
+                    'message': 'GPL 2.0' + '\n' +
+                    appLicense
                 });
             }
         }, {
-            label: APP_NAME,
-            click: function (item, browserWindow) {
-                let onTopOption = browserWindow.isAlwaysOnTop();
-                browserWindow.setAlwaysOnTop(false);
+            label: appName,
+            click() {
+
+                const { width, height } = mainWindow.getBounds();
+                const { x, y } = mainWindow.getPosition();
+            
+                const dialogWidth = 300; // Width of the dialog
+                const dialogHeight = 150; // Height of the dialog
+            
+                const centerX = x + (width - dialogWidth) / 2;
+                const centerY = y + (height - dialogHeight) / 2;
+
+                let onTopOption = mainWindow.isAlwaysOnTop();
+                mainWindow.setAlwaysOnTop(false);
+                mainWindow.setEnabled(false); // Disable the main window
+
                 dialog.showMessageBox({
                     'type': 'info',
                     'title': 'About',
                     buttons: ['Close'],
-                    'message': APP_NAME + '\nVersion ' + APP_VERSION + '\nGPL 2.0 License'
+                    modal: true,
+                    'message': appName + '\n' +
+                    'Version ' + appVersion + ' (' + appBuildId + ')' + '\n' + 
+                    appCopyright + '\n' + 
+                    appAuthor + '\n' + 
+                    appLicense,
+                    x: centerX,
+                    y: centerY
+                }).then(() => {
+                    mainWindow.setAlwaysOnTop(onTopOption);
+                    mainWindow.setEnabled(true); // Re-enable the main window when dialog is closed
+                    mainWindow.focus(); // Bring the main window to front
+
                 });
-                browserWindow.setAlwaysOnTop(onTopOption);
             }
         }]
     }],
@@ -152,25 +226,46 @@ var openPageURL = programOptions.url;
 var profileFilename = '';
 var cacheContent = browserOptions.noCache;
 
-var appMenu = Menu.buildFromTemplate(programOptions.mainMenu);
 
+let mainWindow;
+let appMenu = Menu.buildFromTemplate(programOptions.mainMenu);
 
+process.name = appName;
+app.setName(appName);
 
-app.setName(APP_NAME);
-// Application User Model ID (AUMID) for notifications on Windows 8/8.1/10 to function
-//app.setAppUserModelId(appId);
 //var browserWindowOptions = browserOptions.push({show : false });
 var browserWindowOptions = browserOptions;
 
-// Module to parse command line arguments
-var opts = require('commander');
+// Package to parse command-line options
+const { Command } = require('commander');
+const program = new Command();
 /*
 if (process.defaultApp == true) {
       process.argv.unshift(null)
 }
 */
 
-opts.version(APP_VERSION)
+// Function to save data to JSON file
+function writeToProfileJSON(data) {
+
+    const jsonData = JSON.stringify(data, null, 2); // Use 2 spaces for indentation
+    fs.writeFileSync(nomicProfileJson, jsonData);
+}
+
+// Function to read data from JSON file
+function readFromProfileJSON() {
+    try {
+        const data = fs.readFileSync(nomicProfileJson, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        // If the file doesn't exist or there's an error parsing JSON, return an empty object
+        return {};
+    }
+}
+
+// Define command-line options
+program
+    .version(appVersion)
     .usage('[options]')
     .option('--url <address>', 'Open specified URL ', homePageURL)
     .option('--title <title>', 'Sets window title name', titleName)
@@ -197,51 +292,60 @@ opts.version(APP_VERSION)
     .option('--no-proxy', 'Disables usage of the existing proxy configuration.', false)
     .option('--test', 'Parse configurations, parameters and test if application execution is Ok.')
     .option('--devel-tools', 'Enable development tools')
-    .option('-d, --debug', 'Print debugging info');
+    .option('-d, --debug', 'Print debugging info')
+    .parse(process.argv);
 
 process.name = programOptions.title;
 
-if (process.argv.length > 2 ) {
-    opts.parse([""].concat(process.argv));
+// Access parsed options
+const options = program.opts();
+
+if (typeof options.url === 'undefined') {
+    options.url = openPageURL;
 }
+
+// Save options to Applicaton profile JSON file
+writeToProfileJSON(options);
 
 // Validate URL
-if (!validUrl.isUri(opts.url)) {
-    console.log('Invalid URL: %s', opts.url);
-    process.exit(1);
-} else    {
-    openPageURL = opts.url;
+try {
+    const url = new URL(options.url);
+    openPageURL = url.href;
+} catch (error) {
+    process.stdout.write('Invalid '); // no carriage return
+} finally {
+    console.log('URL: ', options.url);
 }
 
-if (opts.title) browserWindowOptions.title = opts.title;
-if (opts.profile) profileFilename = opts.config;
-if (opts.iconFile) browserWindowOptions.icon = opts.iconFile;
-if (opts.kiosk) browserWindowOptions.kiosk = true;
-if (opts.fullscreen) browserWindowOptions.fullscreen = true;
-if (opts.maximized) browserWindowOptions.maximized = true;
-if (opts.width) browserWindowOptions.width = opts.width;
-if (opts.height) browserWindowOptions.width = opts.height;
-if (opts.minwidth) browserWindowOptions.minWidth = opts.minwidth;
-if (opts.minheight) browserWindowOptions.minWidth = opts.maxheight;
-if (opts.maxwidth) browserWindowOptions.maxWidth = opts.maxwidth;
-if (opts.maxheight) browserWindowOptions.maxWidth = opts.maxheight;
-if (opts.center) browserWindowOptions.center = true;
-if (opts.disableMenu) browserWindowOptions.disableMenuBar = true;
-if (opts.autohideMenu) browserWindowOptions.autoHideMenuBar = true;
-if (opts.noMinimize) browserWindowOptions.minimizable = false;
-if (opts.noMaximize) browserWindowOptions.maximizable = false;
-if (opts.skipTaskbar) browserWindowOptions.skipTaskBar = true;
-if (opts.onTop) browserWindowOptions.alwaysOnTop = true;
-if (opts.noResize) browserWindowOptions.resizable = false;
-if (opts.noBorder) browserWindowOptions.frame = false;
-if (opts.noCache) cacheContent = false;
-if (opts.devel) browserWindowOptions.devTools = true;
-if (opts.debug) programOptions.debug = true;
+if (program.title) browserWindowOptions.title = program.title;
+if (program.profile) profileFilename = program.config;
+if (program.iconFile) browserWindowOptions.icon = program.iconFile;
+if (program.kiosk) browserWindowOptions.kiosk = true;
+if (program.fullscreen) browserWindowOptions.fullscreen = true;
+if (program.maximized) browserWindowOptions.maximized = true;
+if (program.width) browserWindowOptions.width = program.width;
+if (program.height) browserWindowOptions.width = program.height;
+if (program.minwidth) browserWindowOptions.minWidth = program.minwidth;
+if (program.minheight) browserWindowOptions.minWidth = program.maxheight;
+if (program.maxwidth) browserWindowOptions.maxWidth = program.maxwidth;
+if (program.maxheight) browserWindowOptions.maxWidth = program.maxheight;
+if (program.center) browserWindowOptions.center = true;
+if (program.disableMenu) browserWindowOptions.disableMenuBar = true;
+if (program.autohideMenu) browserWindowOptions.autoHideMenuBar = true;
+if (program.noMinimize) browserWindowOptions.minimizable = false;
+if (program.noMaximize) browserWindowOptions.maximizable = false;
+if (program.skipTaskbar) browserWindowOptions.skipTaskBar = true;
+if (program.onTop) browserWindowOptions.alwaysOnTop = true;
+if (program.noResize) browserWindowOptions.resizable = false;
+if (program.noBorder) browserWindowOptions.frame = false;
+if (program.noCache) cacheContent = false;
+if (program.devel) browserWindowOptions.devTools = true;
+if (program.debug) programOptions.debug = true;
 
 
 // Debug Log
-if (opts.debug) {
-    console.log(opts);
+if (program.debug) {
+    console.log(program);
     console.log('----------------');
     console.log(require('module').globalPaths);
     console.log(require('electron'));
@@ -250,29 +354,25 @@ if (opts.debug) {
     console.log('OpenPageURL: %j', openPageURL);
     console.log('browserWindowOptions: ');
     console.log(browserWindowOptions);
-    console.log('opts.args: %j', opts.args);
+    console.log('program.args: %j', program.args);
     console.log('process.argv: %j', process.argv);
 }
 
 
-var mainWindow = null;
-var appMenu = null;
+app.setName(appName);
 
 
-process.name = APP_NAME;
-
-var mainMenu = browserOptions.mainMenu;
-
-//appMenu = Menu.buildFromTemplate(mainMenu);
-
-app.setName(APP_NAME);
-// Application User Model ID (AUMID) for notifications on Windows 8/8.1/10 to function
-//app.setAppUserModelId(appId);
+// Application User Model ID (AUMID) for notifications on Windows 8/8.1/10 to function with
+// multiple Electron applications. You should set different AppUserModelIDs for each application  
+// to ensure that they are treated as separate entities by the Windows operating system. 
+// Example: app.setAppUserModelId('com.example.myapp');
+console.log(packageJson.appId);
+//app.setAppUserModelId(packageJson.appId);
 
 
 function createWindow() {
     // debug
-    if (opts.debug) {
+    if (program.debug) {
         console.log('browserOptions: ');
         console.log(browserOptions);
         console.log('programOptions: ');
@@ -282,12 +382,12 @@ function createWindow() {
         console.log(programOptions.mainMenu);
     }
     // Create the browser window.
-    var mainWindow = new BrowserWindow(browserOptions);
+    mainWindow = new BrowserWindow(browserOptions);
 
-    if (opts.noProxy)    {
+    if (program.noProxy)    {
         mainWindow.webContents.session.setProxy( { pacScript : '' }, function () { return true; });
     }
-    if (opts.disableMenu) {
+    if (program.disableMenu) {
         Menu.setApplicationMenu(null);  // for MacOS
         mainWindow.setMenu(null);       // for Windows and Linux
     } else {
@@ -299,66 +399,63 @@ function createWindow() {
     //mainWindow.loadURL(openPageURL, browserOptions);
     mainWindow.loadURL(openPageURL);
 
-    mainWindow.on('show', function (BrowserWindow) {
+    mainWindow.on('show', function () {
+		mainWindow.on('close', onBeforeUnload);
     });
 
-    mainWindow.on('page-title-updated', function (e) {
-//        e.preventDefault();
+	mainWindow.on('page-title-updated', function (event) {
+		event.preventDefault();
+		mainWindow.setTitle(appName + ' - ' + mainWindow.webContents.getTitle());
+	});
+	/*
+    mainWindow.webContents.on('did-finish-load', function () {
+	    mainWindow.setTitle(appName + ' - ' +  mainWindow.webContents.getTitle());
+    });
+  */
+    mainWindow.on('minimize', function () {
     });
 
-    //
-
-    function onBeforeUnload(e, BrowserWindow) { // Working: but window is still always closed
-        /*  e.preventDefault();
-            e.returnValue = false;
-            {
-
-            let onTopOption = appMenu.items[0].submenu.items[0].checked;
-            if (mainWindow) mainWindow.setAlwaysOnTop(false);
-            let choice = dialog.showMessageBox({
-            type: 'question',
-            title: 'Confirm',
-            message: 'Are you sure you want to quit?',
-            buttons: ['Yes', 'No']
-            });
-            if (mainWindow) mainWindow.setAlwaysOnTop(onTopOption);
-            if (choice === 0) {   // Yes
-            console.log(choice);
-            e.returnValue = true;
-            app.quit();
-            return choice;
-            } else {              // No
-            e.preventDefault();
-            e.returnValue = false;
-            return choice;
-            }*/
-        mainWindow._events.close = null; // Unreference function show that App can close
-        e.returnValue = false;
-    }
     // Emitted when the window is going to be closed, but it's still opened.
     mainWindow.on('close', onBeforeUnload);
 
-    // prevent a new window of being created (ex: target='_blank', etc.)
-    mainWindow.webContents.on('new-window', function (e, goToURL) {
-        e.preventDefault();
-        mainWindow.loadURL(goToURL);
-    });
+    mainWindow.webContents.on('did-start-loading', function () {
+		// console.log(mainWindow.webContents.canGoBack());
+		// Enable/Disable Navigation subMenu item "Back"
+//		if (mainWindow.webContents.canGoBack()) {
+//			appMenu.items[1].submenu.items[2].enabled = true;
+//		} else {
+//			appMenu.items[1].submenu.items[2].enabled = false;
+//		}
+		// Enable/Disable Navigation subMenu item "Forward"
+//		if (mainWindow.webContents.canGoForward()) {
+//			appMenu.items[1].submenu.items[4].enabled = true;
+//		} else {
+//			appMenu.items[1].submenu.items[4].enabled = false;
+//		}
+	});
 
-    // This is only used to test if the application start without any problem,
-    // the application immediatly exits after this if everything is ok
-    if (process.argv[2] === '--test') {
-        console.log('Application Execution Test: Ok');
-        mainWindow._events.close = null; // Unreference function so that App can close
-        mainWindow.close();
-        app.quit();
-    } else {
-        mainWindow.show();
-    }
+    // prevent a new window of being created (ex: target='_blank', etc.)
+	mainWindow.webContents.on('new-window', (event, url) => {
+		event.preventDefault(); // Prevent the default behavior
+		mainWindow.loadURL(url); // Load the URL in the main window
+	});
+
+	// This is only used to test if the application start without any problem,
+	// the application immediatly exits after this if everything is ok
+	if (process.argv[2] === '--test') {
+		if (mainWindow) {
+			mainWindow.destroy(); // Close the window
+		}
+		console.log('Application Execution Test: Ok\n\r');
+		app.quit();
+	} else {
+		mainWindow.show();
+	}
+	console.log('Test file: %s\n\r', homePageURL);
 } // function createWindow
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-app.on('ready', createWindow);
+// Initialization is ready to create main window
+app.whenReady().then(createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -376,3 +473,49 @@ app.on('activate', function () {
         createWindow();
     }
 });
+
+
+function onBeforeUnload(event) {
+
+	event.preventDefault();
+    let onTopState = browserWindow.isAlwaysOnTop();
+    if (mainWindow) {
+        
+        const { width, height } = mainWindow.getBounds();
+        const { x, y } = mainWindow.getPosition();
+
+        const dialogWidth = 300; // Width of the dialog
+        const dialogHeight = 150; // Height of the dialog
+
+        const centerX = x + (width - dialogWidth) / 2;
+        const centerY = y + (height - dialogHeight) / 2;
+
+        browserWindow.setAlwaysOnTop(false);
+
+        // Show a question dialog when attempting to close the window
+        dialog.showMessageBox(mainWindow, {
+            type: 'question',
+            buttons: ['Yes', 'No'],
+            title: 'Confirm Quit',
+            message: 'Are you sure you want to quit?',
+            x: centerX,
+            y: centerY
+        }).then(({ response }) => {
+            mainWindow.show(); // show blured window again
+            if (response === 0) { // Yes button clicked
+                mainWindow._events.close = null; // Unreference function so that App can close
+                event.returnValue = false;
+                mainWindow.destroy(); // Close the window
+                return 0;
+            } else { // Option: No
+                // Re-set previously saved OnTop state
+                mainWindow.setAlwaysOnTop(onTopState);
+                event.preventDefault();
+                event.returnValue = true;
+                return 1;
+            }
+        });
+    } else {
+        app.quit();
+    }
+}

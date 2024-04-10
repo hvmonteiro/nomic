@@ -1,7 +1,7 @@
 build/*
 node_modules/*
-version.json
 src/dist/*
+src/src/*
 src/node_modules/*
-
-out/
+dist/*
+out/*

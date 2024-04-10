@@ -1,34 +1,17 @@
 {
   "name": "nomic",
   "productName": "Nomic",
-  "version": "0.0.2",
-  "build": "0001",
-  "main": "src/nomic.js",
-  "description": "A lightweight browser aimed as a frontend for legacy Web Applications or Kiosk Browser.",
-  "author": "Hugo V. Monteiro <hugo@hugovmonteiro.net> (https://www.hugovmonteiro.net/)",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "copyright": "Copyright (c) 2018, Hugo V. Monteiro",
-  "homepage": "https://github.com/hvmonteiro/nomic#readme",
+  "version": "0.0.99",
+  "buildId": "0",
+  "appId": "com.younity-studios.nomic",
+  "description": "A lightweight browser to be used as a GUI for legacy Web Applications or as a Kiosk Browser.",
+  "author": "Hugo V. Monteiro <hugo@hugovmonteiro.net>",
+  "license": "see LICENSE.md",
+  "copyright": "Copyright (c) 2024, Hugo V. Monteiro",
+  "homePage": "https://www.younity-studios/apps/nomic",
+  "startPage": "https://www.startpage.com/",
   "bugs": {
     "url": "https://github.com/hvmonteiro/nomic/issues"
-  },
-  "scripts": {
-    "start": "electron .",
-    "clean": "grunt clean",
-    "clean-deps": "rm -rf ./node_modules ./src/node_modules",
-    "test": "grunt test",
-    "exec-test": "./node_modules/.bin/electron src/nomic.js --test",
-    "build": "npm run dist:linux && npm run dist:windows && npm run dist:mac",
-    "dev": "NODE_ENV='development' npm run start",
-    "dist:mac": "build --projectDir ./src -c electron-builder.yml --mac --x64 --ia32",
-    "dist:linux": "build --projectDir ./src -c electron-builder.yml --linux --x64 --ia32 --armv7l",
-    "dist:windows": "build --projectDir ./src -c electron-builder.yml --win --x64 --ia32",
-    "preversion": "npm run test && npm run exec-test",
-    "version": "",
-    "postversion": "#git push && git push --tags && npm clean",
-    "release": "npm version minor && npm run build",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
   },
   "repository": {
     "type": "git",
@@ -46,29 +29,52 @@
     "lightweight",
     "desktop"
   ],
+  "main": "src/nomic.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "npm run start",
+    "build:clean": "grunt clean",
+    "build:clean-deps": "rm -rf ./node_modules ./src/node_modules",
+    "build:test": "grunt test",
+    "build:test-exec": "./node_modules/.bin/electron src/nomic.js --test",
+    "build": "npm run dist:windows && npm run dist:linux && npm run dist:mac",
+    "dist:mac": "build --projectDir ./src -c electron-builder.yml --mac --x64",
+    "dist:linux": "build --projectDir ./src -c electron-builder.yml --linux --x64 --armv7l",
+    "dist:windows": "build --projectDir ./src -c electron-builder.yml --win --x64 --ia32",
+    "preversion": "npm run test && npm run exec-test",
+    "build:release": "npm version minor && npm run pre-release && npm run build",
+    "build:package": "electron-forge package",
+    "build:post-release": "#git push && git push --tags && npm clean",
+    "make": "electron-forge make"
+  },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",
-    "babel-preset-env": "^1.5.2",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "electron-forge": "^4.2.0",
-    "electron-prebuilt-compile": "1.6.11",
-    "grunt": "^1.0.1",
-    "grunt-contrib-clean": "^1.1.0",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-exec": "^2.0.0",
-    "jshint": "^2.9.4",
-    "load-grunt-tasks": "^3.5.2"
-  },
-  "dependencies": {
-    "commander": "^2.9.0",
-    "electron": "^1.7.11",
-    "electron-compile": "^6.4.1",
-    "valid-url": "^1.0.9"
+    "@electron/packager": "^18.3.2",
+    "electron": "^29.2.0",
+    "electron-builder": "^24.13.3",
+    "electron-installer-snap": "^5.2.0",
+    "electron-updater": "^6.2.1",
+    "electron-windows-store": "^2.1.0",
+    "grunt": "^1.6.1",
+    "grunt-contrib-clean": "^2.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^3.2.0",
+    "grunt-exec": "^3.0.0",
+    "grunt-htmllint": "^0.3.0",
+    "grunt-mkdir": "^1.1.0",
+    "grunt-replace": "^2.0.2",
+    "grunt-version": "^3.0.1",
+    "grunt-zip": "^1.0.0",
+    "load-grunt-tasks": "^5.1.0",
+    "rcedit": "^4.0.1",
+    "commander": "^12.0.0"
   },
   "engines": {
-    "node": "6.10.x",
-    "npm": "4.5.x",
-    "electron": "1.6.x"
+    "node": "latest",
+    "npm": "latest",
+    "electron": "latest"
   },
   "os": [
     "darwin",
@@ -113,10 +119,26 @@
         "packageName": ""
       },
       "electronReleaseServer": {
-        "baseUrl": "https://www.younity-studios.com/products/nomic",
+        "baseUrl": "https://www.younity-studios.com/apps/nomic",
         "username": "admin",
         "password": "no_one_will_guess_this"
       }
+    }
+  },
+  "build": {
+    "productName": "Nomic",
+    "appId": "com.younity-studios.nomic",
+    "directories": {
+      "output": "build"
+    },
+    "win": {
+      "icon": "assets/icons/win/icon.ico"
+    },
+    "mac": {
+      "icon": "assets/icons/mac/icon.icns"
+    },
+    "linux": {
+      "icon": "assets/icons/win/icon.png"
     }
   }
 }

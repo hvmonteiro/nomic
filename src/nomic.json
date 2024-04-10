@@ -1,0 +1,19 @@
+{
+  "url": "file://C:\\Users\\pt100314\\Documents\\Ubuntu-Shared\\Workspace\\github\\nomic\\test\\index.html",
+  "title": "Nomic (0.0.99)",
+  "profile": "C:\\Users\\pt100314\\Documents\\Ubuntu-Shared\\Workspace\\github\\nomic/nomic.json",
+  "fullscreen": false,
+  "kiosk": false,
+  "maximized": false,
+  "center": false,
+  "disableMenu": false,
+  "autohideMenu": false,
+  "minimize": true,
+  "maximize": true,
+  "skipTaskbar": false,
+  "onTop": false,
+  "resize": false,
+  "border": false,
+  "cache": false,
+  "proxy": false
+}

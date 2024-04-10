@@ -1,20 +1,21 @@
 {
   "name": "nomic",
   "productName": "Nomic",
-  "version": "0.0.1",
-  "build": "0001",
-  "description": "A lightweight browser aimed as a frontend for legacy Web Applications or to be used as a Kiosk Browser.",
-  "author": "Hugo V. Monteiro <hugo@hugovmonteiro.net> (https://www.hugovmonteiro.net/)",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "copyright": "Copyright (c) 2017, Hugo V. Monteiro",
-  "homepage": "https://github.com/hvmonteiro/nomic#readme",
+  "version": "0.0.99",
+  "buildId": "0",
+  "appId": "com.younity-studios.nomic",
+  "description": "A lightweight browser to be used as a GUI for legacy Web Applications or as a Kiosk Browser.",
+  "author": "Hugo V. Monteiro <hugo@hugovmonteiro.net>",
+  "license": "see LICENSE.md",
+  "copyright": "Copyright (c) 2024, Hugo V. Monteiro",
+  "homePage": "https://www.younity-studios/apps/nomic",
+  "startPage": "https://www.startpage.com/",
   "bugs": {
     "url": "https://github.com/hvmonteiro/nomic/issues"
   },
-  "main": "nomic.js",
-  "scripts": {
-    "start": "electron nomic.js",
-    "exec-test": "electron nomic.js --test"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hvmonteiro/nomic.git"
   },
   "keywords": [
     "nomic",
@@ -28,18 +29,15 @@
     "lightweight",
     "desktop"
   ],
-  "devDependencies": {
-    "electron": "^1.6.6",
-    "path": "^0.12.7"
-  },
-  "dependencies": {
-    "commander": "^2.9.0",
-    "valid-url": "^1.0.9"
+  "main": "nomic.js",
+  "scripts": {
+    "start": "electron . ",
+    "exec-test": "electron nomic.js --test"
   },
   "engines": {
-    "node": "6.10.x",
-    "npm": "4.5.x",
-    "electron": "1.6.x"
+    "electron": "latest",
+    "node": "latest",
+    "npm": "latest"
   },
   "os": [
     "darwin",
@@ -51,5 +49,10 @@
     "x64",
     "ia32"
   ],
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "electron": "^29.2.0",
+    "commander": "^12.0.0",
+    "path": "^0.12.7"
+  }
 }
